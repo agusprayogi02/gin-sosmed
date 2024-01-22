@@ -2,7 +2,9 @@ package main
 
 import (
 	"fmt"
+
 	"gin-sosmed/config"
+	"gin-sosmed/router"
 
 	"github.com/gin-gonic/gin"
 )
@@ -20,5 +22,9 @@ func main() {
 			"message": "pong",
 		})
 	})
+
+	// router
+	router.AuthRouter(api)
+
 	r.Run(fmt.Sprintf(":%v", config.ENV.PORT))
 }

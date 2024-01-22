@@ -1,6 +1,8 @@
 package helper
 
-import "gin-sosmed/dto"
+import (
+	"gin-sosmed/dto"
+)
 
 type ResponseWithData struct {
 	Code     int           `json:"code"`

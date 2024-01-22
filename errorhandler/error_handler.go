@@ -1,9 +1,10 @@
 package errorhandler
 
 import (
+	"net/http"
+
 	"gin-sosmed/dto"
 	"gin-sosmed/helper"
-	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
@@ -20,12 +21,13 @@ func ErrorHandler(c *gin.Context, err error) {
 		statusCode = http.StatusBadRequest
 	case *UnauthorizedError:
 		statusCode = http.StatusUnauthorized
+	case *UnprocessableEntityError:
+		statusCode = http.StatusUnprocessableEntity
 	}
 
-	response := helper.Response(dto.ResponseParams{
+	res := helper.Response(dto.ResponseParams{
 		StatusCode: statusCode,
 		Message:    err.Error(),
 	})
-
-	c.JSON(statusCode, response)
+	c.JSON(statusCode, res)
 }
