@@ -3,11 +3,12 @@ package config
 import "github.com/spf13/viper"
 
 type Config struct {
-	PORT    string
-	DB_USER string
-	DB_PASS string
-	DB_URL  string
-	DB_NAME string
+	PORT            string
+	DB_USER         string
+	DB_PASS         string
+	DB_URL          string
+	DB_NAME         string
+	JWT_SIGNING_KEY string
 }
 
 var ENV *Config

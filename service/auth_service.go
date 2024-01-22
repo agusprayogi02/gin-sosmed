@@ -1,6 +1,7 @@
 package service
 
 import (
+	"gin-sosmed/config"
 	"gin-sosmed/dto"
 	"gin-sosmed/entity"
 	"gin-sosmed/errorhandler"
@@ -10,6 +11,7 @@ import (
 
 type AuthService interface {
 	Register(req *dto.RegisterRequest) error
+	Login(req *dto.LoginRequest) (*dto.LoginResponse, error)
 }
 
 type authService struct {
@@ -63,4 +65,31 @@ func (s *authService) Register(req *dto.RegisterRequest) error {
 	}
 
 	return nil
+}
+
+func (s *authService) Login(req *dto.LoginRequest) (*dto.LoginResponse, error) {
+	var data dto.LoginResponse
+
+	user, err := s.repository.GetUserByEmail(req.Email)
+	if err != nil {
+		return nil, &errorhandler.NotFoundError{Message: "Email not found!"}
+	}
+
+	if err := helper.VerifyPassword(user.Password, req.Password); err != nil {
+		return nil, &errorhandler.NotFoundError{Message: "Wrong password!"}
+	}
+
+	token, err := helper.GenerateToken(user, config.ENV.JWT_SIGNING_KEY)
+	if err != nil {
+		return nil, &errorhandler.InternalServerError{Message: err.Error()}
+	}
+
+	data = dto.LoginResponse{
+		Id:    user.ID,
+		Name:  user.Name,
+		Email: user.Email,
+		Token: token,
+	}
+
+	return &data, nil
 }
