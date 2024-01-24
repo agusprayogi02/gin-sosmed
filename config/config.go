@@ -9,6 +9,7 @@ type Config struct {
 	DB_URL          string
 	DB_NAME         string
 	JWT_SIGNING_KEY string
+	NGROK_AUTHTOKEN string
 }
 
 var ENV *Config

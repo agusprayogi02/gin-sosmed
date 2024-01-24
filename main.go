@@ -1,12 +1,13 @@
 package main
 
 import (
-	"fmt"
+	"context"
 
 	"gin-sosmed/config"
 	"gin-sosmed/router"
 
 	"github.com/gin-gonic/gin"
+	cors "github.com/rs/cors/wrapper/gin"
 )
 
 func main() {
@@ -15,16 +16,14 @@ func main() {
 	config.LoadDB()
 
 	r := gin.Default()
-	api := r.Group("/api")
+	r.Use(cors.Default())
 
-	api.GET("/ping", func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"message": "pong",
-		})
-	})
+	ctx := context.Background()
+	l := config.LoadNgrok(ctx)
 
 	// router
-	router.AuthRouter(api)
+	router.InitialRouter(r)
 
-	r.Run(fmt.Sprintf(":%v", config.ENV.PORT))
+	r.RunListener(l)
+	// r.Run(fmt.Sprintf(":%v", config.ENV.PORT))
 }
