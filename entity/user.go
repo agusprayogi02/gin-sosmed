@@ -1,8 +1,7 @@
 package entity
 
 import (
-	"time"
-
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
@@ -25,12 +24,10 @@ func (me GenderType) String() string {
 }
 
 type User struct {
-	ID        uint       `gorm:"primaryKey"`
-	Name      string     `gorm:"type:varchar(150)"`
-	Email     string     `gorm:"type:varchar(100);unique_index"`
-	Password  string     `gorm:"type:varchar(150)"`
-	Gender    GenderType `sql:"type:ENUM('pria', 'wanita')" gorm:"type:varchar(8)"`
-	CreateAt  time.Time
-	UpdateAt  time.Time
-	DeletedAt gorm.DeletedAt `gorm:"index"`
+	ID       uuid.UUID  `gorm:"type:varchar(60);primaryKey"`
+	Name     string     `gorm:"type:varchar(150)"`
+	Email    string     `gorm:"type:varchar(100);unique_index"`
+	Password string     `gorm:"type:varchar(150)"`
+	Gender   GenderType `sql:"type:ENUM('pria', 'wanita')" gorm:"type:varchar(8)"`
+	gorm.Model
 }

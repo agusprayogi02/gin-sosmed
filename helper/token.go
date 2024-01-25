@@ -6,10 +6,11 @@ import (
 	"gin-sosmed/entity"
 
 	"github.com/golang-jwt/jwt/v4"
+	"github.com/google/uuid"
 )
 
 type JWTClaims struct {
-	ID uint `json:"id"`
+	ID uuid.UUID `json:"id"`
 	jwt.RegisteredClaims
 }
 

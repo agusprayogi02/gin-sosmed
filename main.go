@@ -1,7 +1,7 @@
 package main
 
 import (
-	"context"
+	"fmt"
 
 	"gin-sosmed/config"
 	"gin-sosmed/router"
@@ -18,12 +18,12 @@ func main() {
 	r := gin.Default()
 	r.Use(cors.Default())
 
-	ctx := context.Background()
-	l := config.LoadNgrok(ctx)
+	// ctx := context.Background()
+	// l := config.LoadNgrok(ctx)
 
 	// router
 	router.InitialRouter(r)
 
-	r.RunListener(l)
-	// r.Run(fmt.Sprintf(":%v", config.ENV.PORT))
+	// r.RunListener(l)
+	r.Run(fmt.Sprintf(":%v", config.ENV.PORT))
 }

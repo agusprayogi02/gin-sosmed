@@ -7,6 +7,8 @@ import (
 	"gin-sosmed/errorhandler"
 	"gin-sosmed/helper"
 	"gin-sosmed/repository"
+
+	"github.com/google/uuid"
 )
 
 type AuthService interface {
@@ -51,7 +53,13 @@ func (s *authService) Register(req *dto.RegisterRequest) error {
 		gender = entity.WANITA
 	}
 
+	id, err := uuid.NewV7()
+	if err != nil {
+		panic(err)
+	}
+
 	user := entity.User{
+		ID:       id,
 		Name:     req.Name,
 		Email:    req.Email,
 		Password: pass,
