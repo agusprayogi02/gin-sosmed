@@ -26,7 +26,7 @@ func NewPostService(p repository.PostRepository) *postService {
 func (p *postService) Create(req *dto.PostRequest) error {
 	post := entity.Post{
 		ID:     uuid.New(),
-		UserID: *req.AuthorId,
+		UserID: req.AuthorId,
 		Tweet:  req.Tweet,
 	}
 

@@ -1,3 +1,6 @@
 package config
 
-var TweetsFolder string = "public/tweets"
+var (
+	TweetsFolder string = "public/tweets"
+	UserID       string = "user_id"
+)

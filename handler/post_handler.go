@@ -54,14 +54,10 @@ func (h *postHandler) Create(c *gin.Context) {
 		post.Photo.Filename = dst
 	}
 
-	userID, exist := c.Get("user_id")
-	if !exist {
-		errorhandler.ErrorHandler(c, &errorhandler.UnauthorizedError{
-			Message: "Unauthorize",
-		})
-		return
+	userID, exist := c.Get(config.UserID)
+	if exist {
+		post.AuthorId = userID.(uuid.UUID)
 	}
-	post.AuthorId = userID.(*uuid.UUID)
 
 	if err := h.PostService.Create(&post); err != nil {
 		errorhandler.ErrorHandler(c, err)
