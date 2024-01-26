@@ -8,6 +8,7 @@ import (
 
 type PostRepository interface {
 	Create(p *entity.Post) error
+	Get(id string) (*entity.Post, error)
 }
 
 type postRepository struct {
@@ -22,4 +23,10 @@ func NewPostRepository(db *gorm.DB) *postRepository {
 
 func (p *postRepository) Create(req *entity.Post) error {
 	return p.db.Create(req).Error
+}
+
+func (p *postRepository) Get(id string) (*entity.Post, error) {
+	var post *entity.Post
+	err := p.db.Preload("User").First(&post, "id = ?", id).Error
+	return post, err
 }

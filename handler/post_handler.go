@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -16,12 +17,12 @@ import (
 )
 
 type postHandler struct {
-	service.PostService
+	service service.PostService
 }
 
 func NewPostHandler(p service.PostService) *postHandler {
 	return &postHandler{
-		PostService: p,
+		service: p,
 	}
 }
 
@@ -51,7 +52,7 @@ func (h *postHandler) Create(c *gin.Context) {
 			})
 			return
 		}
-		post.Photo.Filename = dst
+		post.Photo.Filename = config.TweetUri + newFileName
 	}
 
 	userID, exist := c.Get(config.UserID)
@@ -59,7 +60,7 @@ func (h *postHandler) Create(c *gin.Context) {
 		post.AuthorId = userID.(uuid.UUID)
 	}
 
-	if err := h.PostService.Create(&post); err != nil {
+	if err := h.service.Create(&post); err != nil {
 		errorhandler.ErrorHandler(c, err)
 		return
 	}
@@ -69,4 +70,21 @@ func (h *postHandler) Create(c *gin.Context) {
 		Message:    "Successfully Created Tweet",
 	})
 	c.JSON(http.StatusCreated, res)
+}
+
+func (h *postHandler) Get(c *gin.Context) {
+	id := c.Param("id")
+	post, err := h.service.Get(id)
+	if err != nil {
+		errorhandler.ErrorHandler(c, err)
+		return
+	}
+	tempPhoto := fmt.Sprintf("http://%v/%v", c.Request.Host, *post.Photo)
+	post.Photo = &tempPhoto
+	res := helper.Response(dto.ResponseParams{
+		StatusCode: http.StatusOK,
+		Data:       post,
+	})
+
+	c.JSON(http.StatusOK, res)
 }

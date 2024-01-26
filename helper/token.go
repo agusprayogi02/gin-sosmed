@@ -20,7 +20,7 @@ func GenerateToken(user *entity.User, signingKeys string) (string, error) {
 	claims := JWTClaims{
 		user.ID,
 		jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(60 * time.Minute)),
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(48 * time.Hour)),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
 			NotBefore: jwt.NewNumericDate(time.Now()),
 		},

@@ -1,6 +1,9 @@
 package router
 
 import (
+	"net/http"
+
+	"gin-sosmed/config"
 	"gin-sosmed/middleware"
 
 	"github.com/gin-gonic/gin"
@@ -14,6 +17,17 @@ func InitialRouter(r *gin.Engine) {
 			"url":     "https://above-vulture-monthly.ngrok-free.app",
 		})
 	})
+	// Prevent from calling methods not implemented.
+	r.NoMethod(func(ctx *gin.Context) {
+		ctx.JSON(http.StatusMethodNotAllowed, gin.H{
+			"status_code": "http.StatusMethodNotAllowed",
+			"is_success":  "false",
+			"data":        "nil",
+			"message":     "Method Not Allowed",
+		})
+	})
+
+	r.Static(config.TweetUri, config.TweetsFolder)
 
 	api := r.Group("/api")
 	api.GET("/ping", func(c *gin.Context) {

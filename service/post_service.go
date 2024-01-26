@@ -11,6 +11,7 @@ import (
 
 type PostService interface {
 	Create(req *dto.PostRequest) error
+	Get(id string) (*dto.PostResponse, error)
 }
 
 type postService struct {
@@ -41,4 +42,29 @@ func (p *postService) Create(req *dto.PostRequest) error {
 	}
 
 	return nil
+}
+
+func (p *postService) Get(id string) (*dto.PostResponse, error) {
+	var post *dto.PostResponse
+
+	data, err := p.repo.Get(id)
+	if err != nil {
+		return nil, &errorhandler.NotFoundError{
+			Message: err.Error(),
+		}
+	}
+	post = &dto.PostResponse{
+		ID:       data.ID,
+		Tweet:    data.Tweet,
+		Photo:    data.Photo,
+		AuthorId: data.UserID,
+		Author: dto.User{
+			ID:    data.User.ID.String(),
+			Name:  data.User.Name,
+			Email: data.User.Email,
+		},
+		CreatedAt: data.CreatedAt,
+		UpdatedAt: data.UpdatedAt,
+	}
+	return post, nil
 }
