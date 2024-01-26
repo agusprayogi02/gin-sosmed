@@ -1,6 +1,8 @@
 package helper
 
 import (
+	"errors"
+	"strings"
 	"time"
 
 	"gin-sosmed/entity"
@@ -23,11 +25,36 @@ func GenerateToken(user *entity.User, signingKeys string) (string, error) {
 			NotBefore: jwt.NewNumericDate(time.Now()),
 		},
 	}
-
+	arrKey := strings.Split(signingKeys, "-")
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	signing, err := HashPassword(signingKeys)
+	t, err := token.SignedString([]byte(arrKey[0]))
 	if err != nil {
-		return signing, err
+		return "", err
 	}
-	return token.SignedString([]byte(signing))
+
+	return Encrypt(t, arrKey[len(arrKey)-1])
+}
+
+func VerifyToken(token string, signingKeys string) (*uuid.UUID, error) {
+	arrKey := strings.Split(signingKeys, "-")
+	tokenStr, err := Decrypt(token, arrKey[len(arrKey)-1])
+	if err != nil {
+		return nil, errors.New("signature has invalid")
+	}
+	realToken, err := jwt.ParseWithClaims(tokenStr, &JWTClaims{}, func(t *jwt.Token) (interface{}, error) {
+		return []byte(arrKey[0]), nil
+	})
+	if err != nil {
+		if err == jwt.ErrSignatureInvalid {
+			return nil, errors.New("signature has invalid")
+		}
+		return nil, errors.New("your token was expired")
+	}
+
+	claims, ok := realToken.Claims.(*JWTClaims)
+	if !ok || !realToken.Valid {
+		return nil, errors.New("your token was expired or invalid")
+	}
+
+	return &claims.ID, nil
 }

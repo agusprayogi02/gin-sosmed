@@ -24,7 +24,7 @@ func (me GenderType) String() string {
 }
 
 type User struct {
-	ID       uuid.UUID  `gorm:"type:varchar(60);primaryKey"`
+	ID       uuid.UUID  `gorm:"type:varchar(45);primaryKey"`
 	Name     string     `gorm:"type:varchar(150)"`
 	Email    string     `gorm:"type:varchar(100);unique_index"`
 	Password string     `gorm:"type:varchar(150)"`

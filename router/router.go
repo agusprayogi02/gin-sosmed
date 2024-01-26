@@ -1,6 +1,10 @@
 package router
 
-import "github.com/gin-gonic/gin"
+import (
+	"gin-sosmed/middleware"
+
+	"github.com/gin-gonic/gin"
+)
 
 func InitialRouter(r *gin.Engine) {
 	r.GET("/", func(c *gin.Context) {
@@ -18,4 +22,8 @@ func InitialRouter(r *gin.Engine) {
 		})
 	})
 	AuthRouter(api)
+
+	// with auth
+	api.Use(middleware.JWTMiddleware())
+	PostRouter(api)
 }

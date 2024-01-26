@@ -6,10 +6,10 @@ import (
 )
 
 type Post struct {
-	ID      uuid.UUID `gorm:"type:varchar(60);primaryKey"`
-	Content string    `gorm:"type:varchar(500)"`
-	Photo   *string   `gorm:"type:varchar(150)"`
-	UserID  uuid.UUID
-	User    User `gorm:"foreignKey:UserID"`
+	ID     uuid.UUID `gorm:"type:varchar(45);primaryKey"`
+	Tweet  string    `gorm:"type:varchar(500)"`
+	Photo  *string   `gorm:"type:varchar(150)"`
+	UserID uuid.UUID
+	User   User `gorm:"foreignKey:UserID"`
 	gorm.Model
 }
