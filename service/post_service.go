@@ -12,6 +12,7 @@ import (
 type PostService interface {
 	Create(req *dto.PostRequest) error
 	Get(id string) (*dto.PostResponse, error)
+	GetAll(p *dto.PaginateRequest) (*int64, *[]dto.PostResponse, error)
 }
 
 type postService struct {
@@ -67,4 +68,37 @@ func (p *postService) Get(id string) (*dto.PostResponse, error) {
 		UpdatedAt: data.UpdatedAt,
 	}
 	return post, nil
+}
+
+func (s *postService) GetAll(p *dto.PaginateRequest) (*int64, *[]dto.PostResponse, error) {
+	var data []dto.PostResponse
+
+	posts, err := s.repo.GetAll(p)
+	if err != nil {
+		return nil, nil, &errorhandler.NotFoundError{
+			Message: err.Error(),
+		}
+	}
+	count, err := s.repo.Counter()
+	if err != nil {
+		return nil, nil, &errorhandler.InternalServerError{
+			Message: err.Error(),
+		}
+	}
+	for _, post := range *posts {
+		data = append(data, dto.PostResponse{
+			ID:       post.ID,
+			AuthorId: post.UserID,
+			Tweet:    post.Tweet,
+			Photo:    post.Photo,
+			Author: dto.User{
+				ID:    post.User.ID.String(),
+				Name:  post.User.Name,
+				Email: post.User.Email,
+			},
+			CreatedAt: post.CreatedAt,
+			UpdatedAt: post.UpdatedAt,
+		})
+	}
+	return &count, &data, nil
 }

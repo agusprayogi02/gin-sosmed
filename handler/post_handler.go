@@ -88,3 +88,29 @@ func (h *postHandler) Get(c *gin.Context) {
 
 	c.JSON(http.StatusOK, res)
 }
+
+func (h *postHandler) GetAll(c *gin.Context) {
+	var paginate *dto.PaginateRequest
+	if err := c.ShouldBindQuery(&paginate); err != nil {
+		errorhandler.ErrorHandler(c, err)
+		return
+	}
+	total, data, err := h.service.GetAll(paginate)
+	if err != nil {
+		errorhandler.ErrorHandler(c, err)
+	}
+
+	res := helper.Response(
+		dto.ResponseParams{
+			StatusCode: http.StatusOK,
+			Message:    "Berhasil",
+			Paginate: &dto.Paginate{
+				Page:    paginate.Page,
+				PerPage: paginate.Limit,
+				Total:   int(*total),
+			},
+			Data: data,
+		},
+	)
+	c.JSON(http.StatusOK, res)
+}

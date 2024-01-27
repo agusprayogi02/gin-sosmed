@@ -6,3 +6,8 @@ type Paginate struct {
 	Total     int `json:"total"`
 	TotalPage int `json:"total_page"`
 }
+
+type PaginateRequest struct {
+	Page  int `json:"page"`
+	Limit int `json:"limit"`
+}

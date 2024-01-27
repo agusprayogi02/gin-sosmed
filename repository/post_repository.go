@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"gin-sosmed/dto"
 	"gin-sosmed/entity"
 
 	"gorm.io/gorm"
@@ -9,6 +10,8 @@ import (
 type PostRepository interface {
 	Create(p *entity.Post) error
 	Get(id string) (*entity.Post, error)
+	GetAll(p *dto.PaginateRequest) (*[]entity.Post, error)
+	Counter() (int64, error)
 }
 
 type postRepository struct {
@@ -25,8 +28,21 @@ func (p *postRepository) Create(req *entity.Post) error {
 	return p.db.Create(req).Error
 }
 
-func (p *postRepository) Get(id string) (*entity.Post, error) {
+func (r *postRepository) Get(id string) (*entity.Post, error) {
 	var post *entity.Post
-	err := p.db.Preload("User").First(&post, "id = ?", id).Error
+	err := r.db.Preload("User").First(&post, "id = ?", id).Error
 	return post, err
+}
+
+func (r *postRepository) GetAll(p *dto.PaginateRequest) (*[]entity.Post, error) {
+	var posts *[]entity.Post
+	offset := (p.Page - 1) * p.Limit
+	err := r.db.Preload("User").Limit(p.Limit).Offset(offset).Find(posts).Error
+	return posts, err
+}
+
+func (r *postRepository) Counter() (int64, error) {
+	var count int64
+	err := r.db.Count(&count).Error
+	return count, err
 }
