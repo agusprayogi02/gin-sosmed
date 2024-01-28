@@ -3,7 +3,6 @@ package repository
 import (
 	"gin-sosmed/dto"
 	"gin-sosmed/entity"
-	"gin-sosmed/errorhandler"
 
 	"gorm.io/gorm"
 )
@@ -13,7 +12,7 @@ type PostRepository interface {
 	Get(id string) (*entity.Post, error)
 	GetAll(p *dto.PaginateRequest) (*[]entity.Post, error)
 	Counter() (int64, error)
-	Edit(p *entity.Post) (*entity.Post, error)
+	Update(p *entity.Post) (*entity.Post, error)
 }
 
 type postRepository struct {
@@ -50,10 +49,6 @@ func (r *postRepository) Counter() (int64, error) {
 }
 
 func (r *postRepository) Update(post *entity.Post) (*entity.Post, error) {
-	if err := r.db.Updates(post).Error; err != nil {
-		return nil, &errorhandler.UnprocessableEntityError{
-			Message: err.Error(),
-		}
-	}
-
+	err := r.db.Preload("User").Updates(post).Error
+	return post, err
 }

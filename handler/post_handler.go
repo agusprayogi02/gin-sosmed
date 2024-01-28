@@ -90,12 +90,14 @@ func (h *postHandler) Get(c *gin.Context) {
 }
 
 func (h *postHandler) GetAll(c *gin.Context) {
-	var paginate *dto.PaginateRequest
+	var paginate dto.PaginateRequest
 	if err := c.ShouldBindQuery(&paginate); err != nil {
-		errorhandler.ErrorHandler(c, err)
+		errorhandler.ErrorHandler(c, &errorhandler.InternalServerError{
+			Message: err.Error(),
+		})
 		return
 	}
-	total, data, err := h.service.GetAll(paginate)
+	total, data, err := h.service.GetAll(&paginate)
 	if err != nil {
 		errorhandler.ErrorHandler(c, err)
 	}
@@ -116,13 +118,10 @@ func (h *postHandler) GetAll(c *gin.Context) {
 }
 
 func (h *postHandler) Update(c *gin.Context) {
-	var req dto.PostEditRequest
-	id := c.Param("id")
-
-	if err := c.BindJSON(&req); err != nil {
-		errorhandler.ErrorHandler(c, &errorhandler.UnprocessableEntityError{
-			Message: err.Error(),
-		})
+	res, err := h.service.Update(c)
+	if err != nil {
+		errorhandler.ErrorHandler(c, err)
 		return
 	}
+	c.JSON(http.StatusOK, res)
 }

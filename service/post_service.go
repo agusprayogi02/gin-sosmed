@@ -1,11 +1,16 @@
 package service
 
 import (
+	"os"
+	"path/filepath"
+
+	"gin-sosmed/config"
 	"gin-sosmed/dto"
 	"gin-sosmed/entity"
 	"gin-sosmed/errorhandler"
 	"gin-sosmed/repository"
 
+	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 )
 
@@ -13,7 +18,7 @@ type PostService interface {
 	Create(req *dto.PostRequest) error
 	Get(id string) (*dto.PostResponse, error)
 	GetAll(p *dto.PaginateRequest) (*int64, *[]dto.PostResponse, error)
-	Update(req *dto.PostEditRequest) (*dto.PostResponse, error)
+	Update(c *gin.Context) (*dto.PostResponse, error)
 }
 
 type postService struct {
@@ -104,8 +109,59 @@ func (s *postService) GetAll(p *dto.PaginateRequest) (*int64, *[]dto.PostRespons
 	return &count, &data, nil
 }
 
-func (s *postService) Update(req *dto.PostEditRequest) (*dto.PostResponse, error) {
-	var data *dto.PostResponse
+func (s *postService) Update(c *gin.Context) (*dto.PostResponse, error) {
+	var req dto.PostEditRequest
 
-	err := s.repo.Update
+	if err := c.ShouldBind(&req); err != nil {
+		return nil, &errorhandler.UnprocessableEntityError{
+			Message: err.Error(),
+		}
+	}
+
+	id := c.Param("id")
+	oldPost, err := s.repo.Get(id)
+	if err != nil {
+		return nil, &errorhandler.NotFoundError{
+			Message: err.Error(),
+		}
+	}
+	oldPost.Tweet = req.Tweet
+
+	if req.Photo != nil {
+		if err := os.MkdirAll(config.TweetsFolder, 0o755); err != nil {
+			return nil, &errorhandler.InternalServerError{
+				Message: err.Error(),
+			}
+		}
+		ext := filepath.Ext(req.Photo.Filename)
+		newFileName := filepath.Join(config.TweetsFolder, uuid.New().String()+ext)
+		if err := c.SaveUploadedFile(req.Photo, newFileName); err != nil {
+			return nil, &errorhandler.InternalServerError{
+				Message: err.Error(),
+			}
+		}
+		req.Photo.Filename = newFileName
+		oldPost.Photo = &newFileName
+	}
+
+	updatedPost, err := s.repo.Update(oldPost)
+	if err != nil {
+		return nil, &errorhandler.InternalServerError{
+			Message: err.Error(),
+		}
+	}
+	data := dto.PostResponse{
+		ID:       updatedPost.ID,
+		Tweet:    updatedPost.Tweet,
+		Photo:    updatedPost.Photo,
+		AuthorId: updatedPost.UserID,
+		Author: dto.User{
+			ID:    updatedPost.User.ID.String(),
+			Name:  updatedPost.User.Name,
+			Email: updatedPost.User.Email,
+		},
+		CreatedAt: updatedPost.CreatedAt,
+		UpdatedAt: updatedPost.UpdatedAt,
+	}
+	return &data, nil
 }

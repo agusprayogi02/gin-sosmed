@@ -18,8 +18,8 @@ type PostResponse struct {
 }
 
 type PostEditRequest struct {
-	Tweet string
-	Photo *multipart.FileHeader
+	Tweet string                `form:"tweet"`
+	Photo *multipart.FileHeader `form:"photo"`
 }
 
 type PostRequest struct {
