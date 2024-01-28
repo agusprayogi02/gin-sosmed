@@ -12,6 +12,7 @@ type PostRepository interface {
 	Get(id string) (*entity.Post, error)
 	GetAll(p *dto.PaginateRequest) (*[]entity.Post, error)
 	Counter() (int64, error)
+	Edit(p *entity.Post) (*entity.Post, error)
 }
 
 type postRepository struct {

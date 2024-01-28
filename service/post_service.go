@@ -13,6 +13,7 @@ type PostService interface {
 	Create(req *dto.PostRequest) error
 	Get(id string) (*dto.PostResponse, error)
 	GetAll(p *dto.PaginateRequest) (*int64, *[]dto.PostResponse, error)
+	Update(req *dto.PostEditRequest) (*dto.PostResponse, error)
 }
 
 type postService struct {

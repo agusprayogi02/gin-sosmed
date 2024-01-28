@@ -114,3 +114,15 @@ func (h *postHandler) GetAll(c *gin.Context) {
 	)
 	c.JSON(http.StatusOK, res)
 }
+
+func (h *postHandler) Update(c *gin.Context) {
+	var req dto.PostEditRequest
+	id := c.Param("id")
+
+	if err := c.BindJSON(&req); err != nil {
+		errorhandler.ErrorHandler(c, errorhandler.UnprocessableEntityError{
+			Message: err.Error(),
+		})
+		return
+	}
+}

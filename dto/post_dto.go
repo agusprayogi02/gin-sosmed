@@ -17,6 +17,11 @@ type PostResponse struct {
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
+type PostEditRequest struct {
+	Tweet string
+	Photo *multipart.FileHeader
+}
+
 type PostRequest struct {
 	Tweet    string                `form:"tweet" binding:"required"`
 	Photo    *multipart.FileHeader `form:"photo"`
