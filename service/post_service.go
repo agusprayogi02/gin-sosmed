@@ -1,6 +1,7 @@
 package service
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 
@@ -17,7 +18,7 @@ import (
 type PostService interface {
 	Create(req *dto.PostRequest) error
 	Get(id string) (*dto.PostResponse, error)
-	GetAll(p *dto.PaginateRequest) (*int64, *[]dto.PostResponse, error)
+	GetAll(p *dto.PaginateRequest, host string) (*int64, *[]dto.PostResponse, error)
 	Update(c *gin.Context) (*dto.PostResponse, error)
 }
 
@@ -76,7 +77,7 @@ func (p *postService) Get(id string) (*dto.PostResponse, error) {
 	return post, nil
 }
 
-func (s *postService) GetAll(p *dto.PaginateRequest) (*int64, *[]dto.PostResponse, error) {
+func (s *postService) GetAll(p *dto.PaginateRequest, host string) (*int64, *[]dto.PostResponse, error) {
 	var data []dto.PostResponse
 
 	posts, err := s.repo.GetAll(p)
@@ -92,11 +93,10 @@ func (s *postService) GetAll(p *dto.PaginateRequest) (*int64, *[]dto.PostRespons
 		}
 	}
 	for _, post := range *posts {
-		data = append(data, dto.PostResponse{
+		pst := dto.PostResponse{
 			ID:       post.ID,
 			AuthorId: post.UserID,
 			Tweet:    post.Tweet,
-			Photo:    post.Photo,
 			Author: dto.User{
 				ID:    post.User.ID.String(),
 				Name:  post.User.Name,
@@ -104,7 +104,12 @@ func (s *postService) GetAll(p *dto.PaginateRequest) (*int64, *[]dto.PostRespons
 			},
 			CreatedAt: post.CreatedAt,
 			UpdatedAt: post.UpdatedAt,
-		})
+		}
+		if post.Photo != nil {
+			tmp := fmt.Sprintf("http://%v/%v", host, *post.Photo)
+			pst.Photo = &tmp
+		}
+		data = append(data, pst)
 	}
 	return &count, &data, nil
 }

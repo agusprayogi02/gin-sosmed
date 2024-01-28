@@ -79,8 +79,10 @@ func (h *postHandler) Get(c *gin.Context) {
 		errorhandler.ErrorHandler(c, err)
 		return
 	}
-	tempPhoto := fmt.Sprintf("http://%v/%v", c.Request.Host, *post.Photo)
-	post.Photo = &tempPhoto
+	if post.Photo != nil {
+		tempPhoto := fmt.Sprintf("http://%v/%v", c.Request.Host, *post.Photo)
+		post.Photo = &tempPhoto
+	}
 	res := helper.Response(dto.ResponseParams{
 		StatusCode: http.StatusOK,
 		Data:       post,
@@ -91,15 +93,17 @@ func (h *postHandler) Get(c *gin.Context) {
 
 func (h *postHandler) GetAll(c *gin.Context) {
 	var paginate dto.PaginateRequest
-	if err := c.ShouldBindQuery(&paginate); err != nil {
-		errorhandler.ErrorHandler(c, &errorhandler.InternalServerError{
+
+	if err := c.ShouldBind(&paginate); err != nil {
+		errorhandler.ErrorHandler(c, &errorhandler.UnprocessableEntityError{
 			Message: err.Error(),
 		})
 		return
 	}
-	total, data, err := h.service.GetAll(&paginate)
+	total, data, err := h.service.GetAll(&paginate, c.Request.Host)
 	if err != nil {
 		errorhandler.ErrorHandler(c, err)
+		return
 	}
 
 	res := helper.Response(
@@ -107,9 +111,10 @@ func (h *postHandler) GetAll(c *gin.Context) {
 			StatusCode: http.StatusOK,
 			Message:    "Berhasil",
 			Paginate: &dto.Paginate{
-				Page:    paginate.Page,
-				PerPage: paginate.Limit,
-				Total:   int(*total),
+				Page:     paginate.Page,
+				PerPage:  paginate.Limit,
+				Total:    int(*total),
+				NextPage: int(*total) > (paginate.Limit * paginate.Page),
 			},
 			Data: data,
 		},

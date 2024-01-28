@@ -36,15 +36,15 @@ func (r *postRepository) Get(id string) (*entity.Post, error) {
 }
 
 func (r *postRepository) GetAll(p *dto.PaginateRequest) (*[]entity.Post, error) {
-	var posts *[]entity.Post
+	var posts []entity.Post
 	offset := (p.Page - 1) * p.Limit
-	err := r.db.Preload("User").Limit(p.Limit).Offset(offset).Find(posts).Error
-	return posts, err
+	err := r.db.Preload("User").Model(&entity.Post{}).Limit(p.Limit).Offset(offset).Find(&posts).Error
+	return &posts, err
 }
 
 func (r *postRepository) Counter() (int64, error) {
 	var count int64
-	err := r.db.Count(&count).Error
+	err := r.db.Model(&entity.Post{}).Count(&count).Error
 	return count, err
 }
 
