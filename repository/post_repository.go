@@ -3,6 +3,7 @@ package repository
 import (
 	"gin-sosmed/dto"
 	"gin-sosmed/entity"
+	"gin-sosmed/errorhandler"
 
 	"gorm.io/gorm"
 )
@@ -46,4 +47,13 @@ func (r *postRepository) Counter() (int64, error) {
 	var count int64
 	err := r.db.Count(&count).Error
 	return count, err
+}
+
+func (r *postRepository) Update(post *entity.Post) (*entity.Post, error) {
+	if err := r.db.Updates(post).Error; err != nil {
+		return nil, &errorhandler.UnprocessableEntityError{
+			Message: err.Error(),
+		}
+	}
+
 }

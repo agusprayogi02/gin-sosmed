@@ -103,3 +103,9 @@ func (s *postService) GetAll(p *dto.PaginateRequest) (*int64, *[]dto.PostRespons
 	}
 	return &count, &data, nil
 }
+
+func (s *postService) Update(req *dto.PostEditRequest) (*dto.PostResponse, error) {
+	var data *dto.PostResponse
+
+	err := s.repo.Update
+}

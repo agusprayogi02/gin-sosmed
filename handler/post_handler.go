@@ -120,7 +120,7 @@ func (h *postHandler) Update(c *gin.Context) {
 	id := c.Param("id")
 
 	if err := c.BindJSON(&req); err != nil {
-		errorhandler.ErrorHandler(c, errorhandler.UnprocessableEntityError{
+		errorhandler.ErrorHandler(c, &errorhandler.UnprocessableEntityError{
 			Message: err.Error(),
 		})
 		return
