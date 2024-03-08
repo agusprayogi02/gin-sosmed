@@ -92,7 +92,10 @@ func (h *postHandler) Get(c *gin.Context) {
 }
 
 func (h *postHandler) GetAll(c *gin.Context) {
-	var paginate dto.PaginateRequest
+	paginate := dto.PaginateRequest{
+		Page:  1,  // Default page number
+		Limit: 10, // Default limit per page
+	}
 
 	if err := c.ShouldBind(&paginate); err != nil {
 		errorhandler.ErrorHandler(c, &errorhandler.UnprocessableEntityError{
