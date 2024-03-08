@@ -7,7 +7,7 @@ tmp_dir = "tmp"
   bin = "tmp/main.exe"
   cmd = "go build -o ./tmp/main.exe ."
   delay = 1000
-  exclude_dir = ["assets", "tmp", "vendor", "testdata"]
+  exclude_dir = [".git","assets", "tmp", "vendor", "testdata"]
   exclude_file = []
   exclude_regex = ["_test.go"]
   exclude_unchanged = false
@@ -38,9 +38,9 @@ tmp_dir = "tmp"
   main_only = false
   time = false
 
-[misc]
-  clean_on_exit = false
+[misc]k
+  clean_on_exit = true
 
 [screen]
-  clear_on_rebuild = false
+  clear_on_rebuild = true
   keep_scroll = true
