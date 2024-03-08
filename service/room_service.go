@@ -63,7 +63,17 @@ func (r *roomService) Get(id string) (*dto.RoomResponse, error) {
 		ID:      data.ID,
 		Name:    data.Name,
 		WismaID: data.WismaID,
-		Note:    data.Note,
+		Wisma: &dto.Wisma{
+			ID:        data.Wisma.ID,
+			Name:      data.Wisma.Name,
+			Address:   data.Wisma.Address,
+			Code:      data.Wisma.Code,
+			Note:      data.Wisma.Note,
+			UserID:    *data.Wisma.UserID,
+			CreatedAt: data.Wisma.CreatedAt,
+			UpdatedAt: data.Wisma.UpdatedAt,
+		},
+		Note: data.Note,
 	}
 
 	return room, nil
@@ -92,17 +102,12 @@ func (r *roomService) GetAll(p *dto.PaginateRequest) (*int64, *[]dto.RoomRespons
 			Name:    v.Name,
 			WismaID: v.WismaID,
 			Wisma: &dto.Wisma{
-				ID:      v.Wisma.ID,
-				Name:    v.Wisma.Name,
-				Address: v.Wisma.Address,
-				Code:    v.Wisma.Code,
-				Note:    v.Wisma.Note,
-				UserID:  *v.Wisma.UserID,
-				User: dto.User{
-					ID:    v.Wisma.User.ID.String(),
-					Name:  v.Wisma.User.Name,
-					Email: v.Wisma.User.Email,
-				},
+				ID:        v.Wisma.ID,
+				Name:      v.Wisma.Name,
+				Address:   v.Wisma.Address,
+				Code:      v.Wisma.Code,
+				Note:      v.Wisma.Note,
+				UserID:    *v.Wisma.UserID,
 				CreatedAt: v.Wisma.CreatedAt,
 				UpdatedAt: v.Wisma.UpdatedAt,
 			},
