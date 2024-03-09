@@ -19,7 +19,7 @@ func LoadDB() {
 	if err != nil {
 		panic(err)
 	}
-	if err := db.AutoMigrate(&entity.User{}, &entity.Post{}, &entity.Room{}, &entity.Wisma{}); err != nil {
+	if err := db.AutoMigrate(&entity.User{}, &entity.Post{}, &entity.Room{}, &entity.Wisma{}, &entity.Customer{}); err != nil {
 		panic(err)
 	}
 	DB = db

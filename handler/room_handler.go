@@ -91,6 +91,39 @@ func (h *roomHandler) GetAll(c *gin.Context) {
 	c.JSON(http.StatusOK, res)
 }
 
+func (h *roomHandler) GetByWisma(c *gin.Context) {
+	paginate := dto.RoomPaginateRequest{
+		Page:  1,  // Default page number
+		Limit: 10, // Default limit
+	}
+
+	if err := c.ShouldBind(&paginate); err != nil {
+		errorhandler.ErrorHandler(c, &errorhandler.UnprocessableEntityError{
+			Message: err.Error(),
+		})
+		return
+	}
+	total, data, err := h.service.GetByWisma(&paginate)
+	if err != nil {
+		errorhandler.ErrorHandler(c, err)
+		return
+	}
+
+	res := helper.Response(
+		dto.ResponseParams{
+			StatusCode: http.StatusOK,
+			Data:       data,
+			Paginate: &dto.Paginate{
+				Page:     paginate.Page,
+				PerPage:  paginate.Limit,
+				Total:    int(*total),
+				NextPage: int(*total) > (paginate.Limit * paginate.Page),
+			},
+		},
+	)
+	c.JSON(http.StatusOK, res)
+}
+
 func (h *roomHandler) Update(c *gin.Context) {
 	var req dto.RoomEditRequest
 

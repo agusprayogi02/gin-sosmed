@@ -7,7 +7,7 @@ import (
 
 	"gin-sosmed/entity"
 
-	"github.com/golang-jwt/jwt/v4"
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 )
 

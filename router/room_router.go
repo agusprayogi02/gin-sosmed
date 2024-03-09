@@ -19,4 +19,5 @@ func NewRoomRouter(r *gin.RouterGroup) {
 	api.GET("/:id", handler.Get)
 	api.PUT("/:id", handler.Update)
 	api.GET("/", handler.GetAll)
+	api.GET("/wisma", handler.GetByWisma)
 }

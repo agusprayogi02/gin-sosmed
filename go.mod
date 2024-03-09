@@ -19,7 +19,7 @@ require (
 	github.com/go-playground/validator/v10 v10.19.0 // indirect
 	github.com/go-stack/stack v1.8.1 // indirect
 	github.com/goccy/go-json v0.10.2 // indirect
-	github.com/golang-jwt/jwt/v4 v4.5.0
+	github.com/golang-jwt/jwt/v5 v5.2.1
 	github.com/google/uuid v1.6.0
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/inconshreveable/log15 v3.0.0-testing.5+incompatible // indirect

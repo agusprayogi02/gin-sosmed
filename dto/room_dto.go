@@ -39,3 +39,9 @@ type Wisma struct {
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 }
+
+type RoomPaginateRequest struct {
+	Page    int    `form:"page"`
+	Limit   int    `form:"limit"`
+	WismaID string `form:"wisma_id"`
+}

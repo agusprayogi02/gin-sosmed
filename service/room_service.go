@@ -13,6 +13,7 @@ type RoomService interface {
 	Create(req *dto.RoomRequest) error
 	Get(id string) (*dto.RoomResponse, error)
 	GetAll(p *dto.PaginateRequest) (*int64, *[]dto.RoomResponse, error)
+	GetByWisma(p *dto.RoomPaginateRequest) (*int64, *[]dto.RoomResponse, error)
 	Update(id string, req dto.RoomEditRequest) (*dto.RoomResponse, error)
 	Delete(id string) error
 }
@@ -90,6 +91,47 @@ func (r *roomService) GetAll(p *dto.PaginateRequest) (*int64, *[]dto.RoomRespons
 	}
 
 	data, err := r.repo.GetAll(p)
+	if err != nil {
+		return nil, nil, &errorhandler.InternalServerError{
+			Message: err.Error(),
+		}
+	}
+
+	for _, v := range *data {
+		rooms = append(rooms, dto.RoomResponse{
+			ID:      v.ID,
+			Name:    v.Name,
+			WismaID: v.WismaID,
+			Wisma: &dto.Wisma{
+				ID:        v.Wisma.ID,
+				Name:      v.Wisma.Name,
+				Address:   v.Wisma.Address,
+				Code:      v.Wisma.Code,
+				Note:      v.Wisma.Note,
+				UserID:    *v.Wisma.UserID,
+				CreatedAt: v.Wisma.CreatedAt,
+				UpdatedAt: v.Wisma.UpdatedAt,
+			},
+			Note:      v.Note,
+			CreatedAt: v.CreatedAt,
+			UpdatedAt: v.UpdatedAt,
+		})
+	}
+
+	return &count, &rooms, nil
+}
+
+func (r *roomService) GetByWisma(p *dto.RoomPaginateRequest) (*int64, *[]dto.RoomResponse, error) {
+	var rooms []dto.RoomResponse
+
+	count, err := r.repo.Counter()
+	if err != nil {
+		return nil, nil, &errorhandler.InternalServerError{
+			Message: err.Error(),
+		}
+	}
+
+	data, err := r.repo.GetByWisma(p)
 	if err != nil {
 		return nil, nil, &errorhandler.InternalServerError{
 			Message: err.Error(),

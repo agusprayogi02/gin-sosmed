@@ -11,6 +11,7 @@ type RoomRepository interface {
 	Create(room entity.Room) error
 	Get(id string) (entity.Room, error)
 	GetAll(p *dto.PaginateRequest) (*[]entity.Room, error)
+	GetByWisma(p *dto.RoomPaginateRequest) (*[]entity.Room, error)
 	Counter() (int64, error)
 	Update(p *entity.Room) (*entity.Room, error)
 	Delete(id string) error
@@ -43,6 +44,13 @@ func (r *roomRepository) GetAll(p *dto.PaginateRequest) (*[]entity.Room, error) 
 	var room []entity.Room
 	offset := (p.Page - 1) * p.Limit
 	err := r.db.Preload("Wisma").Model(&entity.Room{}).Limit(p.Limit).Offset(offset).Find(&room).Error
+	return &room, err
+}
+
+func (r *roomRepository) GetByWisma(p *dto.RoomPaginateRequest) (*[]entity.Room, error) {
+	var room []entity.Room
+	offset := (p.Page - 1) * p.Limit
+	err := r.db.Preload("Wisma").Model(&entity.Room{}).Limit(p.Limit).Offset(offset).Find(&room, "wisma.id = ?", p.WismaID).Error
 	return &room, err
 }
 
