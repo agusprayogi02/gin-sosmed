@@ -9,15 +9,15 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func RoomRouter(r *gin.RouterGroup) {
-	repo := repository.NewRoomRepository(config.DB)
-	service := service.NewRoomService(repo)
-	handler := handler.NewRoomHandler(service)
+func CustomerRouter(r *gin.RouterGroup) {
+	repo := repository.NewCustomerRepository(config.DB)
+	service := service.NewCustomerService(repo)
+	handler := handler.NewCustomerHandler(service)
 
-	api := r.Group("/room")
+	api := r.Group("/customer")
 	api.POST("/", handler.Create)
 	api.GET("/:id", handler.Get)
 	api.PUT("/:id", handler.Update)
 	api.GET("/", handler.GetAll)
-	api.GET("/wisma", handler.GetByWisma)
+	api.DELETE("/:id", handler.Delete)
 }

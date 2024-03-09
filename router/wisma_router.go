@@ -9,7 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func NewWismaRouter(r *gin.RouterGroup) {
+func WismaRouter(r *gin.RouterGroup) {
 	repo := repository.NewWismaRepository(config.DB)
 	service := service.NewWismaService(repo)
 	handler := handler.NewWismaHandler(service)

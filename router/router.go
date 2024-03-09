@@ -40,6 +40,7 @@ func InitialRouter(r *gin.Engine) {
 	// with auth
 	api.Use(middleware.JWTMiddleware())
 	PostRouter(api)
-	NewWismaRouter(api)
-	NewRoomRouter(api)
+	WismaRouter(api)
+	RoomRouter(api)
+	CustomerRouter(api)
 }
