@@ -36,10 +36,11 @@ func (r *roomService) Create(req *dto.RoomRequest) error {
 		}
 	}
 	room := entity.Room{
-		ID:      uuid.New(),
-		Name:    req.Name,
-		WismaID: &id,
-		Note:    req.Note,
+		ID:       uuid.New(),
+		Name:     req.Name,
+		WismaID:  &id,
+		Capacity: req.Capacity,
+		Note:     req.Note,
 	}
 
 	if err := r.repo.Create(room); err != nil {
@@ -61,9 +62,10 @@ func (r *roomService) Get(id string) (*dto.RoomResponse, error) {
 		}
 	}
 	room = &dto.RoomResponse{
-		ID:      data.ID,
-		Name:    data.Name,
-		WismaID: data.WismaID,
+		ID:       data.ID,
+		Name:     data.Name,
+		WismaID:  data.WismaID,
+		Capacity: data.Capacity,
 		Wisma: &dto.Wisma{
 			ID:        data.Wisma.ID,
 			Name:      data.Wisma.Name,
@@ -99,9 +101,10 @@ func (r *roomService) GetAll(p *dto.PaginateRequest) (*int64, *[]dto.RoomRespons
 
 	for _, v := range *data {
 		rooms = append(rooms, dto.RoomResponse{
-			ID:      v.ID,
-			Name:    v.Name,
-			WismaID: v.WismaID,
+			ID:       v.ID,
+			Name:     v.Name,
+			WismaID:  v.WismaID,
+			Capacity: v.Capacity,
 			Wisma: &dto.Wisma{
 				ID:        v.Wisma.ID,
 				Name:      v.Wisma.Name,
@@ -140,9 +143,10 @@ func (r *roomService) GetByWisma(p *dto.RoomPaginateRequest) (*int64, *[]dto.Roo
 
 	for _, v := range *data {
 		rooms = append(rooms, dto.RoomResponse{
-			ID:      v.ID,
-			Name:    v.Name,
-			WismaID: v.WismaID,
+			ID:       v.ID,
+			Name:     v.Name,
+			WismaID:  v.WismaID,
+			Capacity: v.Capacity,
 			Wisma: &dto.Wisma{
 				ID:        v.Wisma.ID,
 				Name:      v.Wisma.Name,
@@ -174,9 +178,10 @@ func (r *roomService) Update(id string, req dto.RoomEditRequest) (*dto.RoomRespo
 
 	v, err := r.repo.Update(&data)
 	room = dto.RoomResponse{
-		ID:      v.ID,
-		Name:    v.Name,
-		WismaID: v.WismaID,
+		ID:       v.ID,
+		Name:     v.Name,
+		WismaID:  v.WismaID,
+		Capacity: v.Capacity,
 		Wisma: &dto.Wisma{
 			ID:      v.Wisma.ID,
 			Name:    v.Wisma.Name,

@@ -11,6 +11,7 @@ type RoomResponse struct {
 	WismaID   *uuid.UUID `json:"wisma_id"`
 	Wisma     *Wisma     `gorm:"foreignKey:WismaID" json:"wisma"`
 	Name      string     `json:"name"`
+	Capacity  int        `json:"capacity"`
 	Note      string     `json:"note"`
 	CreatedAt time.Time  `json:"created_at"`
 	UpdatedAt time.Time  `json:"updated_at"`
@@ -23,9 +24,10 @@ type RoomEditRequest struct {
 }
 
 type RoomRequest struct {
-	WismaID string `json:"wisma_id" binding:"required"`
-	Name    string `json:"name" binding:"required"`
-	Note    string `json:"note"`
+	WismaID  string `json:"wisma_id" binding:"required"`
+	Name     string `json:"name" binding:"required"`
+	Capacity int    `json:"capacity"`
+	Note     string `json:"note"`
 }
 
 type Wisma struct {
@@ -43,5 +45,5 @@ type Wisma struct {
 type RoomPaginateRequest struct {
 	Page    int    `form:"page"`
 	Limit   int    `form:"limit"`
-	WismaID string `form:"wisma_id"`
+	WismaID string `form:"wisma_id" binding:"required"`
 }

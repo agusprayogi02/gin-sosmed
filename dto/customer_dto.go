@@ -21,12 +21,12 @@ type CustomerResponse struct {
 }
 
 type CustomerRequest struct {
-	Nik      string    `json:"nik"`
-	Name     string    `json:"name"`
-	Address  *string   `json:"address"`
-	Phone    string    `json:"phone"`
-	RoomID   string    `json:"room_id"`
-	UserID   uuid.UUID `json:"user_id"`
-	CheckIn  time.Time `json:"check_in"`
-	CheckOut time.Time `json:"check_out"`
+	Nik      string    `json:"nik" binding:"required"`
+	Name     string    `json:"name" binding:"required"`
+	Address  *string   `json:"address" binding:"required"`
+	Phone    string    `json:"phone" binding:"required"`
+	RoomID   string    `json:"room_id" binding:"required"`
+	UserID   uuid.UUID `json:"user_id" binding:"required"`
+	CheckIn  time.Time `json:"check_in" binding:"required"`
+	CheckOut time.Time `json:"check_out" binding:"required"`
 }

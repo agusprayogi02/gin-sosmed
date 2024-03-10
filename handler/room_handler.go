@@ -22,10 +22,17 @@ func NewRoomHandler(p service.RoomService) *roomHandler {
 }
 
 func (h *roomHandler) Create(c *gin.Context) {
-	var req dto.RoomRequest
+	req := dto.RoomRequest{
+		Capacity: 1,
+	}
 
 	if err := c.ShouldBindJSON(&req); err != nil {
 		errorhandler.ErrorHandler(c, &errorhandler.UnprocessableEntityError{Message: err.Error()})
+		return
+	}
+
+	if req.Capacity <= 0 {
+		errorhandler.ErrorHandler(c, &errorhandler.UnprocessableEntityError{Message: "Kapasitar kamar tidak boleh kurang dari 1"})
 		return
 	}
 
