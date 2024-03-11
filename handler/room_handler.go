@@ -3,12 +3,14 @@ package handler
 import (
 	"net/http"
 
+	"gin-sosmed/config"
 	"gin-sosmed/dto"
 	"gin-sosmed/errorhandler"
 	"gin-sosmed/helper"
 	"gin-sosmed/service"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
 
 type roomHandler struct {
@@ -111,6 +113,49 @@ func (h *roomHandler) GetByWisma(c *gin.Context) {
 		return
 	}
 	total, data, err := h.service.GetByWisma(&paginate)
+	if err != nil {
+		errorhandler.ErrorHandler(c, err)
+		return
+	}
+
+	res := helper.Response(
+		dto.ResponseParams{
+			StatusCode: http.StatusOK,
+			Data:       data,
+			Paginate: &dto.Paginate{
+				Page:     paginate.Page,
+				PerPage:  paginate.Limit,
+				Total:    int(*total),
+				NextPage: int(*total) > (paginate.Limit * paginate.Page),
+			},
+		},
+	)
+	c.JSON(http.StatusOK, res)
+}
+
+func (h *roomHandler) GetByUser(c *gin.Context) {
+	paginate := dto.UserRoomPaginateRequest{
+		Page:  1,  // Default page number
+		Limit: 10, // Default limit
+	}
+
+	if err := c.ShouldBind(&paginate); err != nil {
+		errorhandler.ErrorHandler(c, &errorhandler.UnprocessableEntityError{
+			Message: err.Error(),
+		})
+		return
+	}
+
+	userID, exist := c.Get(config.UserID)
+	if !exist {
+		errorhandler.ErrorHandler(c, &errorhandler.UnauthorizedError{
+			Message: "Unauthorized",
+		})
+		return
+	}
+	paginate.UserID = userID.(uuid.UUID)
+
+	total, data, err := h.service.GetByUser(&paginate)
 	if err != nil {
 		errorhandler.ErrorHandler(c, err)
 		return

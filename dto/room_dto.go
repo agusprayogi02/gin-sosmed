@@ -47,3 +47,8 @@ type RoomPaginateRequest struct {
 	Limit   int    `form:"limit"`
 	WismaID string `form:"wisma_id" binding:"required"`
 }
+type UserRoomPaginateRequest struct {
+	Page   int       `form:"page"`
+	Limit  int       `form:"limit"`
+	UserID uuid.UUID `form:"user_id"`
+}

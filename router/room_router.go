@@ -11,8 +11,8 @@ import (
 
 func RoomRouter(r *gin.RouterGroup) {
 	repo := repository.NewRoomRepository(config.DB)
-	service := service.NewRoomService(repo)
-	handler := handler.NewRoomHandler(service)
+	service := service.NewRoomService(*repo)
+	handler := handler.NewRoomHandler(*service)
 
 	api := r.Group("/room")
 	api.POST("/", handler.Create)
@@ -20,4 +20,5 @@ func RoomRouter(r *gin.RouterGroup) {
 	api.PUT("/:id", handler.Update)
 	api.GET("/", handler.GetAll)
 	api.GET("/wisma", handler.GetByWisma)
+	api.GET("/user", handler.GetByUser)
 }
