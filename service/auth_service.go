@@ -11,22 +11,19 @@ import (
 	"github.com/google/uuid"
 )
 
-type AuthService interface {
-	Register(req *dto.RegisterRequest) error
-	Login(req *dto.LoginRequest) (*dto.LoginResponse, error)
-}
-
-type authService struct {
+type AuthService struct {
 	repository repository.AuthRepository
+	wismaRepo  repository.WismaRepository
 }
 
-func NewAuthService(r repository.AuthRepository) *authService {
-	return &authService{
+func NewAuthService(r repository.AuthRepository, w repository.WismaRepository) *AuthService {
+	return &AuthService{
 		repository: r,
+		wismaRepo:  w,
 	}
 }
 
-func (s *authService) Register(req *dto.RegisterRequest) error {
+func (s *AuthService) Register(req *dto.RegisterRequest) error {
 	if emailExist := s.repository.EmailExist(req.Email); emailExist {
 		return &errorhandler.UnprocessableEntityError{
 			Message: "Email already exist",
@@ -75,7 +72,7 @@ func (s *authService) Register(req *dto.RegisterRequest) error {
 	return nil
 }
 
-func (s *authService) Login(req *dto.LoginRequest) (*dto.LoginResponse, error) {
+func (s *AuthService) Login(req *dto.LoginRequest) (*dto.LoginResponse, error) {
 	var data dto.LoginResponse
 
 	user, err := s.repository.GetUserByEmail(req.Email)
@@ -92,11 +89,33 @@ func (s *authService) Login(req *dto.LoginRequest) (*dto.LoginResponse, error) {
 		return nil, &errorhandler.InternalServerError{Message: err.Error()}
 	}
 
+	var wismasRes []dto.WismaResponse
+	wismas, err := s.wismaRepo.GetByUser(user.ID.String())
+	if err != nil {
+		return nil, &errorhandler.InternalServerError{Message: err.Error()}
+	}
+	for _, v := range *wismas {
+		wismasRes = append(wismasRes, dto.WismaResponse{
+			ID:      v.ID,
+			Nama:    v.Name,
+			Address: v.Address,
+			Code:    v.Code,
+			UserID:  *v.UserID,
+			User: &dto.User{
+				ID:    user.ID.String(),
+				Name:  user.Name,
+				Email: user.Email,
+			},
+			Note: v.Note,
+		})
+	}
+
 	data = dto.LoginResponse{
 		Id:    user.ID,
 		Name:  user.Name,
 		Email: user.Email,
 		Token: token,
+		Wisma: &wismasRes,
 	}
 
 	return &data, nil

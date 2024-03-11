@@ -11,13 +11,14 @@ type RegisterRequest struct {
 }
 
 type LoginRequest struct {
-	Email    string `json:"email" binding:"required"`
-	Password string `json:"password" binding:"required"`
+	Email    string `json:"email" binding:"required,email"`
+	Password string `json:"password" binding:"required,min=8"`
 }
 
 type LoginResponse struct {
-	Id    uuid.UUID `json:"id"`
-	Email string    `json:"email"`
-	Name  string    `json:"name"`
-	Token string    `json:"token"`
+	Id    uuid.UUID        `json:"id"`
+	Email string           `json:"email"`
+	Name  string           `json:"name"`
+	Token string           `json:"token"`
+	Wisma *[]WismaResponse `json:"wisma"`
 }

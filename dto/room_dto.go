@@ -26,7 +26,7 @@ type RoomEditRequest struct {
 type RoomRequest struct {
 	WismaID  string `json:"wisma_id" binding:"required"`
 	Name     string `json:"name" binding:"required"`
-	Capacity int    `json:"capacity"`
+	Capacity int    `json:"capacity" binding:"required"`
 	Note     string `json:"note"`
 }
 

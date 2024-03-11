@@ -9,25 +9,17 @@ import (
 	"github.com/google/uuid"
 )
 
-type WismaService interface {
-	Create(w dto.WismaRequest) error
-	Get(id string) (*dto.WismaResponse, error)
-	GetAll(p *dto.PaginateRequest) (*int64, *[]dto.WismaResponse, error)
-	Update(id string, req dto.WismaRequest) (*dto.WismaResponse, error)
-	Delete(id string) error
-}
-
-type wismaService struct {
+type WismaService struct {
 	repo repository.WismaRepository
 }
 
-func NewWismaService(r repository.WismaRepository) *wismaService {
-	return &wismaService{
+func NewWismaService(r repository.WismaRepository) *WismaService {
+	return &WismaService{
 		repo: r,
 	}
 }
 
-func (s *wismaService) Create(w dto.WismaRequest) error {
+func (s *WismaService) Create(w dto.WismaRequest) error {
 	wisma := entity.Wisma{
 		ID:      uuid.New(),
 		Name:    w.Nama,
@@ -47,7 +39,7 @@ func (s *wismaService) Create(w dto.WismaRequest) error {
 	return nil
 }
 
-func (s *wismaService) Get(id string) (*dto.WismaResponse, error) {
+func (s *WismaService) Get(id string) (*dto.WismaResponse, error) {
 	var wisma *dto.WismaResponse
 
 	data, err := s.repo.Get(id)
@@ -63,7 +55,7 @@ func (s *wismaService) Get(id string) (*dto.WismaResponse, error) {
 		Code:    data.Code,
 		Note:    data.Note,
 		UserID:  *data.UserID,
-		User: dto.User{
+		User: &dto.User{
 			ID:    data.User.ID.String(),
 			Name:  data.User.Name,
 			Email: data.User.Email,
@@ -75,7 +67,7 @@ func (s *wismaService) Get(id string) (*dto.WismaResponse, error) {
 	return wisma, nil
 }
 
-func (s *wismaService) GetAll(p *dto.PaginateRequest) (*int64, *[]dto.WismaResponse, error) {
+func (s *WismaService) GetAll(p *dto.PaginateRequest) (*int64, *[]dto.WismaResponse, error) {
 	var data []dto.WismaResponse
 
 	wisma, err := s.repo.GetAll(p)
@@ -98,7 +90,7 @@ func (s *wismaService) GetAll(p *dto.PaginateRequest) (*int64, *[]dto.WismaRespo
 			Code:    w.Code,
 			Note:    w.Note,
 			UserID:  *w.UserID,
-			User: dto.User{
+			User: &dto.User{
 				ID:    w.User.ID.String(),
 				Name:  w.User.Name,
 				Email: w.User.Email,
@@ -111,7 +103,7 @@ func (s *wismaService) GetAll(p *dto.PaginateRequest) (*int64, *[]dto.WismaRespo
 	return &count, &data, nil
 }
 
-func (s *wismaService) Update(id string, req dto.WismaRequest) (*dto.WismaResponse, error) {
+func (s *WismaService) Update(id string, req dto.WismaRequest) (*dto.WismaResponse, error) {
 	var wisma dto.WismaResponse
 
 	data, err := s.repo.Get(id)
@@ -140,7 +132,7 @@ func (s *wismaService) Update(id string, req dto.WismaRequest) (*dto.WismaRespon
 		Code:    model.Code,
 		Note:    model.Note,
 		UserID:  *model.UserID,
-		User: dto.User{
+		User: &dto.User{
 			ID:    model.User.ID.String(),
 			Name:  model.User.Name,
 			Email: model.User.Email,
@@ -151,7 +143,7 @@ func (s *wismaService) Update(id string, req dto.WismaRequest) (*dto.WismaRespon
 	return &wisma, nil
 }
 
-func (s *wismaService) Delete(id string) error {
+func (s *WismaService) Delete(id string) error {
 	err := s.repo.Delete(id)
 	if err != nil {
 		return &errorhandler.InternalServerError{

@@ -11,8 +11,8 @@ import (
 
 func WismaRouter(r *gin.RouterGroup) {
 	repo := repository.NewWismaRepository(config.DB)
-	service := service.NewWismaService(repo)
-	handler := handler.NewWismaHandler(service)
+	service := service.NewWismaService(*repo)
+	handler := handler.NewWismaHandler(*service)
 
 	wr := r.Group("/wisma")
 	wr.POST("/", handler.Create)
