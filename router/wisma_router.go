@@ -15,9 +15,9 @@ func WismaRouter(r *gin.RouterGroup) {
 	handler := handler.NewWismaHandler(*service)
 
 	wr := r.Group("/wisma")
-	wr.POST("/", handler.Create)
+	wr.POST("", handler.Create)
 	wr.GET("/:id", handler.Get)
 	wr.PUT("/:id", handler.Update)
-	wr.GET("/", handler.GetAll)
+	wr.GET("", handler.GetAll)
 	wr.DELETE("/:id", handler.Delete)
 }

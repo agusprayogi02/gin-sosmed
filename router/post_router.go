@@ -15,8 +15,8 @@ func PostRouter(r *gin.RouterGroup) {
 	handler := handler.NewPostHandler(service)
 
 	api := r.Group("/tweets")
-	api.POST("/", handler.Create)
+	api.POST("", handler.Create)
 	api.GET("/:id", handler.Get)
 	api.PUT("/:id", handler.Update)
-	api.GET("/", handler.GetAll)
+	api.GET("", handler.GetAll)
 }

@@ -15,9 +15,9 @@ func CustomerRouter(r *gin.RouterGroup) {
 	handler := handler.NewCustomerHandler(service)
 
 	api := r.Group("/customer")
-	api.POST("/", handler.Create)
+	api.POST("", handler.Create)
 	api.GET("/:id", handler.Get)
 	api.PUT("/:id", handler.Update)
-	api.GET("/", handler.GetAll)
+	api.GET("", handler.GetAll)
 	api.DELETE("/:id", handler.Delete)
 }

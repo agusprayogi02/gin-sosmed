@@ -15,10 +15,10 @@ func RoomRouter(r *gin.RouterGroup) {
 	handler := handler.NewRoomHandler(*service)
 
 	api := r.Group("/room")
-	api.POST("/", handler.Create)
+	api.POST("", handler.Create)
 	api.GET("/:id", handler.Get)
 	api.PUT("/:id", handler.Update)
-	api.GET("/", handler.GetAll)
+	api.GET("", handler.GetAll)
 	api.GET("/wisma", handler.GetByWisma)
 	api.GET("/user", handler.GetByUser)
 }

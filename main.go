@@ -15,7 +15,7 @@ func main() {
 	config.LoadConfig()
 	config.LoadDB()
 
-	gin.SetMode(gin.DebugMode)
+	gin.SetMode(gin.ReleaseMode)
 	r := gin.New()
 	r.Use(cors.Default())
 
