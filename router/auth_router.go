@@ -12,9 +12,10 @@ import (
 func AuthRouter(api *gin.RouterGroup) {
 	authRepo := repository.NewAuthRepository(config.DB)
 	wismaRepo := repository.NewWismaRepository(config.DB)
-	authService := service.NewAuthService(authRepo, *wismaRepo)
+	authService := service.NewAuthService(*authRepo, *wismaRepo)
 	authHandler := handler.NewAuthHandler(*authService)
 
 	api.POST("/register", authHandler.Register)
+	api.POST("/register-customer", authHandler.RegisterCustomer)
 	api.POST("/login", authHandler.Login)
 }

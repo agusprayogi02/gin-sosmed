@@ -32,7 +32,7 @@ func (s *CustomerService) Create(req *dto.CustomerRequest) error {
 		Name:     req.Name,
 		Address:  req.Address,
 		Phone:    req.Phone,
-		RoomID:   roomId,
+		RoomID:   &roomId,
 		UserID:   req.UserID,
 		CheckIn:  &req.CheckIn,
 		CheckOut: &req.CheckOut,
@@ -55,7 +55,7 @@ func (s *CustomerService) Get(id string) (*dto.CustomerResponse, error) {
 		Name:     customer.Name,
 		Address:  customer.Address,
 		Phone:    customer.Phone,
-		RoomID:   customer.RoomID,
+		RoomID:   *customer.RoomID,
 		UserID:   customer.UserID,
 		CheckIn:  customer.CheckIn,
 		CheckOut: customer.CheckOut,
@@ -78,7 +78,7 @@ func (s *CustomerService) GetAll() (*[]dto.CustomerResponse, error) {
 			Name:     customer.Name,
 			Address:  customer.Address,
 			Phone:    customer.Phone,
-			RoomID:   customer.RoomID,
+			RoomID:   *customer.RoomID,
 			UserID:   customer.UserID,
 			CheckIn:  customer.CheckIn,
 			CheckOut: customer.CheckOut,
@@ -107,7 +107,7 @@ func (s *CustomerService) Update(req *dto.CustomerRequest, id string) (*dto.Cust
 	data.Name = req.Name
 	data.Address = req.Address
 	data.Phone = req.Phone
-	data.RoomID = roomId
+	data.RoomID = &roomId
 	data.CheckIn = &req.CheckIn
 	data.CheckOut = &req.CheckOut
 
@@ -124,7 +124,7 @@ func (s *CustomerService) Update(req *dto.CustomerRequest, id string) (*dto.Cust
 		Name:     updatedCustomer.Name,
 		Address:  updatedCustomer.Address,
 		Phone:    updatedCustomer.Phone,
-		RoomID:   updatedCustomer.RoomID,
+		RoomID:   *updatedCustomer.RoomID,
 		UserID:   updatedCustomer.UserID,
 		CheckIn:  updatedCustomer.CheckIn,
 		CheckOut: updatedCustomer.CheckOut,

@@ -12,6 +12,24 @@ const (
 	WANITA GenderType = "wanita"
 )
 
+type RoleType string
+
+const (
+	ADMIN RoleType = "admin"
+	USER  RoleType = "user"
+)
+
+func (me RoleType) String() string {
+	switch me {
+	case ADMIN:
+		return "admin"
+	case USER:
+		return "user"
+	default:
+		return "user"
+	}
+}
+
 func (me GenderType) String() string {
 	switch me {
 	case PRIA:
@@ -28,6 +46,7 @@ type User struct {
 	Name     string     `gorm:"type:varchar(150)"`
 	Email    string     `gorm:"type:varchar(100);unique_index"`
 	Password string     `gorm:"type:varchar(150)"`
-	Gender   GenderType `sql:"type:ENUM('pria', 'wanita')" gorm:"type:varchar(8)"`
+	Gender   GenderType `gorm:"type:ENUM('pria', 'wanita')"`
+	Role     RoleType   `gorm:"type:ENUM('admin', 'user');default:'user'"`
 	gorm.Model
 }

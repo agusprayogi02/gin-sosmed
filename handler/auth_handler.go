@@ -22,7 +22,9 @@ func NewAuthHandler(s service.AuthService) *authHandler {
 }
 
 func (h *authHandler) Register(ctx *gin.Context) {
-	var register dto.RegisterRequest
+	register := dto.RegisterRequest{
+		Role: "admin",
+	}
 
 	if err := ctx.ShouldBindJSON(&register); err != nil {
 		errorhandler.ErrorHandler(ctx, &errorhandler.UnprocessableEntityError{Message: err.Error()})
@@ -61,4 +63,25 @@ func (h *authHandler) Login(ctx *gin.Context) {
 		Data:       result,
 	})
 	ctx.JSON(http.StatusOK, res)
+}
+
+func (h *authHandler) RegisterCustomer(ctx *gin.Context) {
+	var req dto.RegisterCustomerRequest
+
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		errorhandler.ErrorHandler(ctx, &errorhandler.UnprocessableEntityError{Message: err.Error()})
+		return
+	}
+
+	err := h.service.RegisterCustomer(&req)
+	if err != nil {
+		errorhandler.ErrorHandler(ctx, err)
+		return
+	}
+
+	res := helper.Response(dto.ResponseParams{
+		StatusCode: http.StatusCreated,
+		Message:    "Register Customer Successfully, please login!",
+	})
+	ctx.JSON(http.StatusCreated, res)
 }

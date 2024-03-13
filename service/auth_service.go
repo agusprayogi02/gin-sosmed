@@ -23,22 +23,22 @@ func NewAuthService(r repository.AuthRepository, w repository.WismaRepository) *
 	}
 }
 
-func (s *AuthService) Register(req *dto.RegisterRequest) error {
+func (s *AuthService) RegisterCheck(req *dto.RegisterRequest) (*entity.User, error) {
 	if emailExist := s.repository.EmailExist(req.Email); emailExist {
-		return &errorhandler.UnprocessableEntityError{
+		return nil, &errorhandler.UnprocessableEntityError{
 			Message: "Email already exist",
 		}
 	}
 
 	if req.Password != req.PasswordConfirm {
-		return &errorhandler.UnprocessableEntityError{
+		return nil, &errorhandler.UnprocessableEntityError{
 			Message: "Password not same",
 		}
 	}
 
 	pass, err := helper.HashPassword(req.Password)
 	if err != nil {
-		return &errorhandler.InternalServerError{
+		return nil, &errorhandler.InternalServerError{
 			Message: err.Error(),
 		}
 	}
@@ -52,7 +52,14 @@ func (s *AuthService) Register(req *dto.RegisterRequest) error {
 
 	id, err := uuid.NewV7()
 	if err != nil {
-		panic(err)
+		id = uuid.New()
+	}
+
+	var role entity.RoleType
+	if req.Role == entity.ADMIN.String() {
+		role = entity.ADMIN
+	} else {
+		role = entity.USER
 	}
 
 	user := entity.User{
@@ -61,9 +68,17 @@ func (s *AuthService) Register(req *dto.RegisterRequest) error {
 		Email:    req.Email,
 		Password: pass,
 		Gender:   gender,
+		Role:     role,
 	}
+	return &user, nil
+}
 
-	if err := s.repository.Register(&user); err != nil {
+func (s *AuthService) Register(req *dto.RegisterRequest) error {
+	user, err := s.RegisterCheck(req)
+	if err != nil {
+		return err
+	}
+	if err := s.repository.Register(user); err != nil {
 		return &errorhandler.InternalServerError{
 			Message: err.Error(),
 		}
@@ -119,4 +134,34 @@ func (s *AuthService) Login(req *dto.LoginRequest) (*dto.LoginResponse, error) {
 	}
 
 	return &data, nil
+}
+
+func (s *AuthService) RegisterCustomer(req *dto.RegisterCustomerRequest) error {
+	userReq := dto.RegisterRequest{
+		Name:            req.Name,
+		Email:           req.Email,
+		Password:        req.Password,
+		PasswordConfirm: req.PasswordConfirm,
+		Gender:          req.Gender,
+		Role:            "user",
+	}
+
+	user, err := s.RegisterCheck(&userReq)
+	if err != nil {
+		return err
+	}
+
+	customerReq := entity.Customer{
+		ID:      uuid.New(),
+		Nik:     req.NIK,
+		Name:    req.Name,
+		Address: &req.Address,
+		Phone:   req.Phone,
+		UserID:  user.ID,
+	}
+	if err := s.repository.CreateWithCustomer(user, customerReq); err != nil {
+		return &errorhandler.NotFoundError{Message: err.Error()}
+	}
+
+	return nil
 }

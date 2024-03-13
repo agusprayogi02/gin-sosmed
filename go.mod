@@ -4,10 +4,15 @@ go 1.21.6
 
 require github.com/rs/cors/wrapper/gin v0.0.0-20240228164225-8d33ca4794ea
 
-require gopkg.in/yaml.v2 v2.4.0 // indirect
+require (
+	filippo.io/edwards25519 v1.1.0 // indirect
+	github.com/go-sql-driver/mysql v1.8.0 // indirect
+	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
+	gopkg.in/yaml.v2 v2.4.0 // indirect
+)
 
 require (
-	github.com/bytedance/sonic v1.11.2 // indirect
+	github.com/bytedance/sonic v1.11.3 // indirect
 	github.com/chenzhuoyu/base64x v0.0.0-20230717121745-296ad89f973d // indirect
 	github.com/chenzhuoyu/iasm v0.9.1 // indirect
 	github.com/fsnotify/fsnotify v1.7.0 // indirect
@@ -24,10 +29,6 @@ require (
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/inconshreveable/log15 v3.0.0-testing.5+incompatible // indirect
 	github.com/inconshreveable/log15/v3 v3.0.0-testing.5 // indirect
-	github.com/jackc/pgpassfile v1.0.0 // indirect
-	github.com/jackc/pgservicefile v0.0.0-20231201235250-de7065d80cb9 // indirect
-	github.com/jackc/pgx/v5 v5.5.4 // indirect
-	github.com/jackc/puddle/v2 v2.2.1 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
 	github.com/jpillora/backoff v1.0.0 // indirect
@@ -66,6 +67,6 @@ require (
 	google.golang.org/protobuf v1.33.0 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
-	gorm.io/driver/postgres v1.5.6
+	gorm.io/driver/mysql v1.5.4
 	gorm.io/gorm v1.25.7
 )

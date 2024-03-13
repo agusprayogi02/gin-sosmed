@@ -13,8 +13,8 @@ type Customer struct {
 	Name     string    `gorm:"type:varchar(500)"`
 	Address  *string   `gorm:"type:varchar(150)"`
 	Phone    string    `gorm:"type:varchar(15)"`
-	RoomID   uuid.UUID
-	Room     Room `gorm:"foreignKey:RoomID"`
+	RoomID   *uuid.UUID
+	Room     *Room `gorm:"foreignKey:RoomID"`
 	UserID   uuid.UUID
 	User     User `gorm:"foreignKey:UserID"`
 	CheckIn  *time.Time
