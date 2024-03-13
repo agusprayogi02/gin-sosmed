@@ -47,7 +47,7 @@ func (r RoomRepository) GetByWisma(p *dto.RoomPaginateRequest) (*[]entity.Room, 
 func (r RoomRepository) GetByUser(p *dto.UserRoomPaginateRequest) (*[]entity.Room, error) {
 	var room []entity.Room
 	offset := (p.Page - 1) * p.Limit
-	err := r.db.Joins("Wisma").Joins("Wisma.User").Model(&entity.Room{}).Limit(p.Limit).Offset(offset).Find(&room, "\"Wisma\".\"user_id\" = ?", p.UserID.String()).Error
+	err := r.db.Joins("Wisma").Joins("Wisma.User").Model(&entity.Room{}).Limit(p.Limit).Offset(offset).Find(&room, "Wisma.user_id = ?", p.UserID.String()).Error
 	return &room, err
 }
 
