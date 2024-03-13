@@ -130,6 +130,7 @@ func (s *AuthService) Login(req *dto.LoginRequest) (*dto.LoginResponse, error) {
 		Name:  user.Name,
 		Email: user.Email,
 		Token: token,
+		Role:  user.Role.String(),
 		Wisma: &wismasRes,
 	}
 

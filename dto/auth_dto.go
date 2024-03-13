@@ -32,5 +32,6 @@ type LoginResponse struct {
 	Email string           `json:"email"`
 	Name  string           `json:"name"`
 	Token string           `json:"token"`
+	Role  string           `json:"role"`
 	Wisma *[]WismaResponse `json:"wisma"`
 }
