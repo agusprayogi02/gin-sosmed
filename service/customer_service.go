@@ -21,49 +21,58 @@ func NewCustomerService(repo *repository.CustomerRepository) *CustomerService {
 	}
 }
 
-func (s *CustomerService) Scan(req *dto.CustomerScan) error {
+func (s *CustomerService) Scan(req *dto.CustomerScan) (*dto.CustomerResponse, error) {
 	roomId, err := uuid.Parse(req.RoomID)
 	if err != nil {
-		return &errorhandler.UnprocessableEntityError{
+		return nil, &errorhandler.UnprocessableEntityError{
 			Message: "Invalid Room ID",
-		}
-	}
-	customer, err := s.repo.GetByUserId(req.UserID.String())
-	if err != nil {
-		return &errorhandler.NotFoundError{
-			Message: "Customer Not Found",
-		}
-	}
-
-	room, _ := s.repo.CheckRoom(req.RoomID)
-	if !room {
-		return &errorhandler.NotFoundError{
-			Message: "Room Not Found",
-		}
-	}
-	status, _ := s.repo.CheckStatusRoom(req.RoomID)
-	if status {
-		return &errorhandler.UnprocessableEntityError{
-			Message: "Room already booked",
 		}
 	}
 
 	now := time.Now().Format("2006-01-02")
 	checkOut, err := time.Parse("2006-01-02", req.CheckOut)
 	if err != nil {
-		return &errorhandler.UnprocessableEntityError{
+		return nil, &errorhandler.UnprocessableEntityError{
 			Message: "Invalid Check Out Date",
 		}
 	}
 	checkIn, err := time.Parse("2006-01-02", now)
 	if err != nil {
-		return &errorhandler.UnprocessableEntityError{
+		return nil, &errorhandler.UnprocessableEntityError{
 			Message: "Invalid Check Out Date",
 		}
 	}
 	if checkIn.After(checkOut) {
-		return &errorhandler.UnprocessableEntityError{
+		return nil, &errorhandler.UnprocessableEntityError{
 			Message: "Check Out Date must be greater than Check In Date",
+		}
+	}
+
+	customer, err := s.repo.GetByUserId(req.UserID.String())
+	if err != nil {
+		return nil, &errorhandler.NotFoundError{
+			Message: "Customer Not Found",
+		}
+	}
+
+	if customer.RoomID != nil {
+		if customer.CheckOut.After(checkIn) {
+			return nil, &errorhandler.UnprocessableEntityError{
+				Message: "You have booked a room",
+			}
+		}
+	}
+
+	room, _ := s.repo.CheckRoom(req.RoomID)
+	if !room {
+		return nil, &errorhandler.NotFoundError{
+			Message: "Room Not Found",
+		}
+	}
+	status, _ := s.repo.CheckStatusRoom(req.RoomID)
+	if status {
+		return nil, &errorhandler.UnprocessableEntityError{
+			Message: "Room already booked",
 		}
 	}
 
@@ -73,11 +82,11 @@ func (s *CustomerService) Scan(req *dto.CustomerScan) error {
 
 	_, err = s.repo.Update(&customer)
 	if err != nil {
-		return &errorhandler.InternalServerError{
+		return nil, &errorhandler.InternalServerError{
 			Message: err.Error(),
 		}
 	}
-	return nil
+	return s.Get(customer.ID.String())
 }
 
 func (s *CustomerService) Create(req *dto.CustomerRequest) error {

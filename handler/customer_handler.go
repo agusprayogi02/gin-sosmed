@@ -38,7 +38,8 @@ func (h *CustomerHandler) ScanQr(c *gin.Context) {
 	}
 
 	req.UserID = userID.(uuid.UUID)
-	if err := h.service.Scan(&req); err != nil {
+	data, err := h.service.Scan(&req)
+	if err != nil {
 		errorhandler.ErrorHandler(c, err)
 		return
 	}
@@ -46,6 +47,7 @@ func (h *CustomerHandler) ScanQr(c *gin.Context) {
 	res := helper.Response(dto.ResponseParams{
 		StatusCode: http.StatusCreated,
 		Message:    "Successfully Booked Room",
+		Data:       data,
 	})
 	c.JSON(http.StatusCreated, res)
 }
