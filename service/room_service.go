@@ -157,6 +157,23 @@ func (r *RoomService) GetByWisma(p *dto.RoomPaginateRequest) (*int64, *[]dto.Roo
 	return &count, &rooms, nil
 }
 
+func (r *RoomService) GetByUserRaw(p *dto.UserRoomPaginateRequest) (*int64, *[]dto.RoomResponse, error) {
+	count, err := r.repo.Counter()
+	if err != nil {
+		return nil, nil, &errorhandler.InternalServerError{
+			Message: err.Error(),
+		}
+	}
+
+	rooms, err := r.repo.GetByUserRaw(p)
+	if err != nil {
+		return nil, nil, &errorhandler.InternalServerError{
+			Message: err.Error(),
+		}
+	}
+	return &count, rooms, nil
+}
+
 func (r *RoomService) GetByUser(p *dto.UserRoomPaginateRequest) (*int64, *[]dto.RoomResponse, error) {
 	var rooms []dto.RoomResponse
 

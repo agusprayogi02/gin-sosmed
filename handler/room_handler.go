@@ -176,6 +176,49 @@ func (h *roomHandler) GetByUser(c *gin.Context) {
 	c.JSON(http.StatusOK, res)
 }
 
+func (h *roomHandler) GetByUserRaw(c *gin.Context) {
+	paginate := dto.UserRoomPaginateRequest{
+		Page:  1,  // Default page number
+		Limit: 10, // Default limit
+	}
+
+	if err := c.ShouldBind(&paginate); err != nil {
+		errorhandler.ErrorHandler(c, &errorhandler.UnprocessableEntityError{
+			Message: err.Error(),
+		})
+		return
+	}
+
+	userID, exist := c.Get(config.UserID)
+	if !exist {
+		errorhandler.ErrorHandler(c, &errorhandler.UnauthorizedError{
+			Message: "Unauthorized",
+		})
+		return
+	}
+	paginate.UserID = userID.(uuid.UUID)
+
+	total, data, err := h.service.GetByUserRaw(&paginate)
+	if err != nil {
+		errorhandler.ErrorHandler(c, err)
+		return
+	}
+
+	res := helper.Response(
+		dto.ResponseParams{
+			StatusCode: http.StatusOK,
+			Data:       data,
+			Paginate: &dto.Paginate{
+				Page:     paginate.Page,
+				PerPage:  paginate.Limit,
+				Total:    int(*total),
+				NextPage: int(*total) > (paginate.Limit * paginate.Page),
+			},
+		},
+	)
+	c.JSON(http.StatusOK, res)
+}
+
 func (h *roomHandler) Update(c *gin.Context) {
 	var req dto.RoomEditRequest
 

@@ -13,6 +13,7 @@ type RoomResponse struct {
 	Name      string     `json:"name"`
 	Capacity  int        `json:"capacity"`
 	Note      string     `json:"note"`
+	Status    string     `json:"status"`
 	CreatedAt time.Time  `json:"created_at"`
 	UpdatedAt time.Time  `json:"updated_at"`
 }

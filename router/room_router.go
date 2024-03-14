@@ -21,4 +21,5 @@ func RoomRouter(r *gin.RouterGroup) {
 	api.GET("", handler.GetAll)
 	api.GET("/wisma", handler.GetByWisma)
 	api.GET("/user", handler.GetByUser)
+	api.GET("/user-raw", handler.GetByUserRaw)
 }

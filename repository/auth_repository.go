@@ -22,26 +22,16 @@ func (r *AuthRepository) Register(req *entity.User) error {
 }
 
 func (r *AuthRepository) CreateWithCustomer(userReq *entity.User, customerReq entity.Customer) error {
-	tx := r.db.Begin()
-	defer func() {
-		if r := recover(); r != nil {
-			tx.Rollback()
+	return r.db.Transaction(func(tx *gorm.DB) error {
+		if err := tx.Create(&userReq).Error; err != nil {
+			return err
 		}
-	}()
-
-	if err := tx.Error; err != nil {
-		return err
-	}
-	if err := tx.Create(&userReq).Error; err != nil {
-		tx.Rollback()
-		return err
-	}
-	customerReq.UserID = userReq.ID
-	if err := tx.Create(&customerReq).Error; err != nil {
-		tx.Rollback()
-		return err
-	}
-	return tx.Commit().Error
+		customerReq.UserID = userReq.ID
+		if err := tx.Create(&customerReq).Error; err != nil {
+			return err
+		}
+		return nil
+	})
 }
 
 func (r *AuthRepository) EmailExist(email string) bool {
