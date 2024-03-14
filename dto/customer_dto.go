@@ -30,3 +30,9 @@ type CustomerRequest struct {
 	CheckIn  time.Time `json:"check_in" binding:"required"`
 	CheckOut time.Time `json:"check_out" binding:"required"`
 }
+
+type CustomerScan struct {
+	CheckOut string    `json:"check_out" binding:"required"`
+	UserID   uuid.UUID `json:"user_id"`
+	RoomID   string    `json:"room_id" binding:"required"`
+}

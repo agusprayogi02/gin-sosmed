@@ -23,6 +23,33 @@ func NewCustomerHandler(s *service.CustomerService) *CustomerHandler {
 	}
 }
 
+func (h *CustomerHandler) ScanQr(c *gin.Context) {
+	var req dto.CustomerScan
+
+	if err := c.ShouldBindJSON(&req); err != nil {
+		errorhandler.ErrorHandler(c, &errorhandler.UnprocessableEntityError{Message: err.Error()})
+		return
+	}
+
+	userID, exist := c.Get(config.UserID)
+	if !exist {
+		errorhandler.ErrorHandler(c, &errorhandler.UnauthorizedError{Message: "Unauthorized"})
+		return
+	}
+
+	req.UserID = userID.(uuid.UUID)
+	if err := h.service.Scan(&req); err != nil {
+		errorhandler.ErrorHandler(c, err)
+		return
+	}
+
+	res := helper.Response(dto.ResponseParams{
+		StatusCode: http.StatusCreated,
+		Message:    "Successfully Booked Room",
+	})
+	c.JSON(http.StatusCreated, res)
+}
+
 func (h *CustomerHandler) Create(c *gin.Context) {
 	var req dto.CustomerRequest
 

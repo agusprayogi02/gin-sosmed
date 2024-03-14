@@ -1,6 +1,8 @@
 package service
 
 import (
+	"time"
+
 	"gin-sosmed/dto"
 	"gin-sosmed/entity"
 	"gin-sosmed/errorhandler"
@@ -17,6 +19,65 @@ func NewCustomerService(repo *repository.CustomerRepository) *CustomerService {
 	return &CustomerService{
 		repo: repo,
 	}
+}
+
+func (s *CustomerService) Scan(req *dto.CustomerScan) error {
+	roomId, err := uuid.Parse(req.RoomID)
+	if err != nil {
+		return &errorhandler.UnprocessableEntityError{
+			Message: "Invalid Room ID",
+		}
+	}
+	customer, err := s.repo.GetByUserId(req.UserID.String())
+	if err != nil {
+		return &errorhandler.NotFoundError{
+			Message: "Customer Not Found",
+		}
+	}
+
+	room, _ := s.repo.CheckRoom(req.RoomID)
+	if !room {
+		return &errorhandler.NotFoundError{
+			Message: "Room Not Found",
+		}
+	}
+	status, _ := s.repo.CheckStatusRoom(req.RoomID)
+	if status {
+		return &errorhandler.UnprocessableEntityError{
+			Message: "Room already booked",
+		}
+	}
+
+	now := time.Now().Format("2006-01-02")
+	checkOut, err := time.Parse("2006-01-02", req.CheckOut)
+	if err != nil {
+		return &errorhandler.UnprocessableEntityError{
+			Message: "Invalid Check Out Date",
+		}
+	}
+	checkIn, err := time.Parse("2006-01-02", now)
+	if err != nil {
+		return &errorhandler.UnprocessableEntityError{
+			Message: "Invalid Check Out Date",
+		}
+	}
+	if checkIn.After(checkOut) {
+		return &errorhandler.UnprocessableEntityError{
+			Message: "Check Out Date must be greater than Check In Date",
+		}
+	}
+
+	customer.RoomID = &roomId
+	customer.CheckIn = &checkIn
+	customer.CheckOut = &checkOut
+
+	_, err = s.repo.Update(&customer)
+	if err != nil {
+		return &errorhandler.InternalServerError{
+			Message: err.Error(),
+		}
+	}
+	return nil
 }
 
 func (s *CustomerService) Create(req *dto.CustomerRequest) error {
