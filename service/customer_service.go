@@ -120,12 +120,27 @@ func (s *CustomerService) Get(id string) (*dto.CustomerResponse, error) {
 	}
 
 	return &dto.CustomerResponse{
-		ID:       customer.ID,
-		Nik:      customer.Nik,
-		Name:     customer.Name,
-		Address:  customer.Address,
-		Phone:    customer.Phone,
-		RoomID:   *customer.RoomID,
+		ID:      customer.ID,
+		Nik:     customer.Nik,
+		Name:    customer.Name,
+		Address: customer.Address,
+		Phone:   customer.Phone,
+		RoomID:  *customer.RoomID,
+		Room: dto.RoomResponse{
+			ID:        customer.Room.ID,
+			Name:      customer.Room.Name,
+			WismaID:   customer.Room.WismaID,
+			Wisma:     nil,
+			Capacity:  customer.Room.Capacity,
+			Note:      customer.Room.Note,
+			CreatedAt: customer.Room.CreatedAt,
+			UpdatedAt: customer.Room.UpdatedAt,
+		},
+		User: dto.User{
+			ID:    customer.User.ID.String(),
+			Email: customer.User.Email,
+			Name:  customer.User.Name,
+		},
 		UserID:   customer.UserID,
 		CheckIn:  customer.CheckIn,
 		CheckOut: customer.CheckOut,
@@ -152,6 +167,21 @@ func (s *CustomerService) GetAll() (*[]dto.CustomerResponse, error) {
 			UserID:   customer.UserID,
 			CheckIn:  customer.CheckIn,
 			CheckOut: customer.CheckOut,
+			Room: dto.RoomResponse{
+				ID:        customer.Room.ID,
+				Name:      customer.Room.Name,
+				WismaID:   customer.Room.WismaID,
+				Wisma:     nil,
+				Capacity:  customer.Room.Capacity,
+				Note:      customer.Room.Note,
+				CreatedAt: customer.Room.CreatedAt,
+				UpdatedAt: customer.Room.UpdatedAt,
+			},
+			User: dto.User{
+				ID:    customer.User.ID.String(),
+				Email: customer.User.Email,
+				Name:  customer.User.Name,
+			},
 		})
 	}
 

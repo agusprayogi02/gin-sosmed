@@ -22,7 +22,7 @@ func (r *CustomerRepository) Create(customer entity.Customer) error {
 
 func (r *CustomerRepository) Get(id string) (entity.Customer, error) {
 	var customer entity.Customer
-	err := r.db.First(&customer, "id = ?", id).Error
+	err := r.db.Preload("Room").Preload("User").First(&customer, "id = ?", id).Error
 	if err != nil {
 		return customer, err
 	}
@@ -58,7 +58,7 @@ func (r *CustomerRepository) CheckStatusRoom(id string) (bool, error) {
 
 func (r *CustomerRepository) GetAll() (*[]entity.Customer, error) {
 	var customer []entity.Customer
-	err := r.db.Find(&customer).Error
+	err := r.db.Preload("Room").Preload("User").Find(&customer).Error
 	return &customer, err
 }
 
