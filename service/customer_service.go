@@ -107,7 +107,6 @@ func (s *CustomerService) Create(req *dto.CustomerRequest) error {
 		CheckIn:  &req.CheckIn,
 		CheckOut: &req.CheckOut,
 	}
-
 	return s.repo.Create(consumer)
 }
 
@@ -118,24 +117,48 @@ func (s *CustomerService) Get(id string) (*dto.CustomerResponse, error) {
 			Message: "Customer Not Found",
 		}
 	}
+	return s.HandleGet(customer), nil
+}
 
-	return &dto.CustomerResponse{
+func (s *CustomerService) GetByUserId(id string) (*dto.CustomerResponse, error) {
+	customer, err := s.repo.GetByUserId(id)
+	if err != nil {
+		return nil, &errorhandler.NotFoundError{
+			Message: "Customer Not Found",
+		}
+	}
+	if customer.CheckOut != nil && time.Now().After(*customer.CheckOut) {
+		customer.Room = nil
+		customer.RoomID = nil
+		customer.CheckIn = nil
+		customer.CheckOut = nil
+
+		_, err = s.repo.Update(&customer)
+		if err != nil {
+			return nil, &errorhandler.InternalServerError{
+				Message: err.Error(),
+			}
+		}
+		customer, err = s.repo.GetByUserId(id)
+		if err != nil {
+			return nil, &errorhandler.NotFoundError{
+				Message: "Customer Not Found",
+			}
+		}
+	}
+
+	return s.HandleGet(customer), nil
+}
+
+func (s *CustomerService) HandleGet(customer entity.Customer) *dto.CustomerResponse {
+	response := &dto.CustomerResponse{
 		ID:      customer.ID,
 		Nik:     customer.Nik,
 		Name:    customer.Name,
 		Address: customer.Address,
 		Phone:   customer.Phone,
-		RoomID:  *customer.RoomID,
-		Room: dto.RoomResponse{
-			ID:        customer.Room.ID,
-			Name:      customer.Room.Name,
-			WismaID:   customer.Room.WismaID,
-			Wisma:     nil,
-			Capacity:  customer.Room.Capacity,
-			Note:      customer.Room.Note,
-			CreatedAt: customer.Room.CreatedAt,
-			UpdatedAt: customer.Room.UpdatedAt,
-		},
+		RoomID:  customer.RoomID,
+		Room:    nil,
 		User: dto.User{
 			ID:    customer.User.ID.String(),
 			Email: customer.User.Email,
@@ -144,7 +167,29 @@ func (s *CustomerService) Get(id string) (*dto.CustomerResponse, error) {
 		UserID:   customer.UserID,
 		CheckIn:  customer.CheckIn,
 		CheckOut: customer.CheckOut,
-	}, nil
+	}
+	if customer.RoomID != nil {
+		response.Room = &dto.RoomResponse{
+			ID:      customer.Room.ID,
+			Name:    customer.Room.Name,
+			WismaID: customer.Room.WismaID,
+			Wisma: &dto.WismaResponse{
+				ID:        customer.Room.Wisma.ID,
+				Name:      customer.Room.Wisma.Name,
+				Address:   customer.Room.Wisma.Address,
+				Code:      customer.Room.Wisma.Code,
+				Note:      customer.Room.Wisma.Note,
+				User:      nil,
+				CreatedAt: customer.Room.Wisma.CreatedAt,
+				UpdatedAt: customer.Room.Wisma.UpdatedAt,
+			},
+			Capacity:  customer.Room.Capacity,
+			Note:      customer.Room.Note,
+			CreatedAt: customer.Room.CreatedAt,
+			UpdatedAt: customer.Room.UpdatedAt,
+		}
+	}
+	return response
 }
 
 func (s *CustomerService) GetAll() (*[]dto.CustomerResponse, error) {
@@ -157,32 +202,7 @@ func (s *CustomerService) GetAll() (*[]dto.CustomerResponse, error) {
 
 	var response []dto.CustomerResponse
 	for _, customer := range *customers {
-		response = append(response, dto.CustomerResponse{
-			ID:       customer.ID,
-			Nik:      customer.Nik,
-			Name:     customer.Name,
-			Address:  customer.Address,
-			Phone:    customer.Phone,
-			RoomID:   *customer.RoomID,
-			UserID:   customer.UserID,
-			CheckIn:  customer.CheckIn,
-			CheckOut: customer.CheckOut,
-			Room: dto.RoomResponse{
-				ID:        customer.Room.ID,
-				Name:      customer.Room.Name,
-				WismaID:   customer.Room.WismaID,
-				Wisma:     nil,
-				Capacity:  customer.Room.Capacity,
-				Note:      customer.Room.Note,
-				CreatedAt: customer.Room.CreatedAt,
-				UpdatedAt: customer.Room.UpdatedAt,
-			},
-			User: dto.User{
-				ID:    customer.User.ID.String(),
-				Email: customer.User.Email,
-				Name:  customer.User.Name,
-			},
-		})
+		response = append(response, *s.HandleGet(customer))
 	}
 
 	return &response, nil
@@ -218,17 +238,7 @@ func (s *CustomerService) Update(req *dto.CustomerRequest, id string) (*dto.Cust
 		}
 	}
 
-	return &dto.CustomerResponse{
-		ID:       updatedCustomer.ID,
-		Nik:      updatedCustomer.Nik,
-		Name:     updatedCustomer.Name,
-		Address:  updatedCustomer.Address,
-		Phone:    updatedCustomer.Phone,
-		RoomID:   *updatedCustomer.RoomID,
-		UserID:   updatedCustomer.UserID,
-		CheckIn:  updatedCustomer.CheckIn,
-		CheckOut: updatedCustomer.CheckOut,
-	}, nil
+	return s.Get(updatedCustomer.ID.String())
 }
 
 func (s *CustomerService) Delete(id string) error {

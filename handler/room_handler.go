@@ -239,6 +239,7 @@ func (h *roomHandler) Update(c *gin.Context) {
 	res := helper.Response(dto.ResponseParams{
 		StatusCode: http.StatusOK,
 		Data:       data,
+		Message:    "Successfully Updated Room",
 	})
 	c.JSON(http.StatusOK, res)
 }

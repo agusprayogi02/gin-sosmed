@@ -50,7 +50,7 @@ func (s *WismaService) Get(id string) (*dto.WismaResponse, error) {
 	}
 	wisma = &dto.WismaResponse{
 		ID:      data.ID,
-		Nama:    data.Name,
+		Name:    data.Name,
 		Address: data.Address,
 		Code:    data.Code,
 		Note:    data.Note,
@@ -85,7 +85,7 @@ func (s *WismaService) GetAll(p *dto.PaginateRequest) (*int64, *[]dto.WismaRespo
 	for _, w := range *wisma {
 		data = append(data, dto.WismaResponse{
 			ID:      w.ID,
-			Nama:    w.Name,
+			Name:    w.Name,
 			Address: w.Address,
 			Code:    w.Code,
 			Note:    w.Note,
@@ -127,7 +127,7 @@ func (s *WismaService) Update(id string, req dto.WismaRequest) (*dto.WismaRespon
 
 	wisma = dto.WismaResponse{
 		ID:      model.ID,
-		Nama:    model.Name,
+		Name:    model.Name,
 		Address: model.Address,
 		Code:    model.Code,
 		Note:    model.Note,

@@ -10,7 +10,7 @@ type WismaResponse struct {
 	ID        uuid.UUID `json:"id"`
 	UserID    uuid.UUID `json:"user_id"`
 	User      *User     `gorm:"foreignKey:UserID" json:"user"`
-	Nama      string    `json:"nama"`
+	Name      string    `json:"name"`
 	Address   string    `json:"address"`
 	Code      string    `json:"code"`
 	Note      string    `json:"note"`

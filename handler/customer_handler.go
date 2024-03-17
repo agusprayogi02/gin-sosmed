@@ -96,6 +96,25 @@ func (h *CustomerHandler) Get(c *gin.Context) {
 	c.JSON(http.StatusOK, res)
 }
 
+func (h *CustomerHandler) GetByUser(c *gin.Context) {
+	userID, exist := c.Get(config.UserID)
+	if !exist {
+		errorhandler.ErrorHandler(c, &errorhandler.UnauthorizedError{Message: "Unauthorized"})
+		return
+	}
+	data, err := h.service.GetByUserId(userID.(uuid.UUID).String())
+	if err != nil {
+		errorhandler.ErrorHandler(c, err)
+		return
+	}
+
+	res := helper.Response(dto.ResponseParams{
+		StatusCode: http.StatusOK,
+		Data:       data,
+	})
+	c.JSON(http.StatusOK, res)
+}
+
 func (h *CustomerHandler) GetAll(c *gin.Context) {
 	data, err := h.service.GetAll()
 	if err != nil {

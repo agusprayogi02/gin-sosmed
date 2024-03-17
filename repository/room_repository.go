@@ -25,7 +25,7 @@ func (r RoomRepository) Create(room entity.Room) error {
 
 func (r RoomRepository) Get(id string) (entity.Room, error) {
 	var room entity.Room
-	err := r.db.Preload("Wisma").First(&room, "id = ?", id).Error
+	err := r.db.Joins("Wisma").Joins("Wisma.User").Model(&entity.Room{}).First(&room, "rooms.id = ?", id).Error
 	if err != nil {
 		return room, err
 	}
@@ -35,7 +35,7 @@ func (r RoomRepository) Get(id string) (entity.Room, error) {
 func (r RoomRepository) GetAll(p *dto.PaginateRequest) (*[]entity.Room, error) {
 	var room []entity.Room
 	offset := (p.Page - 1) * p.Limit
-	err := r.db.Preload("Wisma").Model(&entity.Room{}).Limit(p.Limit).Offset(offset).Find(&room).Error
+	err := r.db.Joins("Wisma").Joins("Wisma.User").Model(&entity.Room{}).Limit(p.Limit).Offset(offset).Find(&room).Error
 	return &room, err
 }
 
@@ -70,9 +70,8 @@ func (r RoomRepository) Counter() (int64, error) {
 	return count, err
 }
 
-func (r RoomRepository) Update(room *entity.Room) (*entity.Room, error) {
-	err := r.db.Updates(room).Error
-	return room, err
+func (r RoomRepository) Update(room *entity.Room) error {
+	return r.db.Updates(room).Error
 }
 
 func (r RoomRepository) Delete(id string) error {

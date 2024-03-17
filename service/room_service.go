@@ -57,7 +57,7 @@ func (r *RoomService) Get(id string) (*dto.RoomResponse, error) {
 		Name:     data.Name,
 		WismaID:  data.WismaID,
 		Capacity: data.Capacity,
-		Wisma: &dto.Wisma{
+		Wisma: &dto.WismaResponse{
 			ID:        data.Wisma.ID,
 			Name:      data.Wisma.Name,
 			Address:   data.Wisma.Address,
@@ -96,7 +96,7 @@ func (r *RoomService) GetAll(p *dto.PaginateRequest) (*int64, *[]dto.RoomRespons
 			Name:     v.Name,
 			WismaID:  v.WismaID,
 			Capacity: v.Capacity,
-			Wisma: &dto.Wisma{
+			Wisma: &dto.WismaResponse{
 				ID:        v.Wisma.ID,
 				Name:      v.Wisma.Name,
 				Address:   v.Wisma.Address,
@@ -138,7 +138,7 @@ func (r *RoomService) GetByWisma(p *dto.RoomPaginateRequest) (*int64, *[]dto.Roo
 			Name:     v.Name,
 			WismaID:  v.WismaID,
 			Capacity: v.Capacity,
-			Wisma: &dto.Wisma{
+			Wisma: &dto.WismaResponse{
 				ID:        v.Wisma.ID,
 				Name:      v.Wisma.Name,
 				Address:   v.Wisma.Address,
@@ -197,13 +197,13 @@ func (r *RoomService) GetByUser(p *dto.UserRoomPaginateRequest) (*int64, *[]dto.
 			Name:     v.Name,
 			WismaID:  v.WismaID,
 			Capacity: v.Capacity,
-			Wisma: &dto.Wisma{
+			Wisma: &dto.WismaResponse{
 				ID:      v.Wisma.ID,
 				Name:    v.Wisma.Name,
 				Address: v.Wisma.Address,
 				Code:    v.Wisma.Code,
 				UserID:  *v.Wisma.UserID,
-				User: dto.User{
+				User: &dto.User{
 					ID:    v.Wisma.User.ID.String(),
 					Name:  v.Wisma.User.Name,
 					Email: v.Wisma.User.Email,
@@ -222,8 +222,6 @@ func (r *RoomService) GetByUser(p *dto.UserRoomPaginateRequest) (*int64, *[]dto.
 }
 
 func (r *RoomService) Update(id string, req dto.RoomEditRequest) (*dto.RoomResponse, error) {
-	var room dto.RoomResponse
-
 	data, err := r.repo.Get(id)
 	if err != nil {
 		return nil, &errorhandler.NotFoundError{
@@ -231,39 +229,17 @@ func (r *RoomService) Update(id string, req dto.RoomEditRequest) (*dto.RoomRespo
 		}
 	}
 
-	v, err := r.repo.Update(&data)
-	room = dto.RoomResponse{
-		ID:       v.ID,
-		Name:     v.Name,
-		WismaID:  v.WismaID,
-		Capacity: v.Capacity,
-		Wisma: &dto.Wisma{
-			ID:      v.Wisma.ID,
-			Name:    v.Wisma.Name,
-			Address: v.Wisma.Address,
-			Code:    v.Wisma.Code,
-			Note:    v.Wisma.Note,
-			UserID:  *v.Wisma.UserID,
-			User: dto.User{
-				ID:    v.Wisma.User.ID.String(),
-				Name:  v.Wisma.User.Name,
-				Email: v.Wisma.User.Email,
-			},
-			CreatedAt: v.Wisma.CreatedAt,
-			UpdatedAt: v.Wisma.UpdatedAt,
-		},
-		Note:      v.Note,
-		CreatedAt: v.CreatedAt,
-		UpdatedAt: v.UpdatedAt,
-	}
+	data.Capacity = req.Capacity
+	data.Name = req.Name
+	data.Note = req.Note
 
-	if err != nil {
+	if err := r.repo.Update(&data); err != nil {
 		return nil, &errorhandler.InternalServerError{
 			Message: err.Error(),
 		}
 	}
 
-	return &room, nil
+	return r.Get(id)
 }
 
 func (r *RoomService) Delete(id string) error {

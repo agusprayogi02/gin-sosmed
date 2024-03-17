@@ -16,6 +16,7 @@ func CustomerRouter(r *gin.RouterGroup) {
 
 	api := r.Group("/customer")
 	api.POST("", handler.Create)
+	api.GET("/user", handler.GetByUser)
 	api.POST("/scan", handler.ScanQr)
 	api.GET("/:id", handler.Get)
 	api.PUT("/:id", handler.Update)

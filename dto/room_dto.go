@@ -7,21 +7,22 @@ import (
 )
 
 type RoomResponse struct {
-	ID        uuid.UUID  `json:"id"`
-	WismaID   *uuid.UUID `json:"wisma_id"`
-	Wisma     *Wisma     `gorm:"foreignKey:WismaID" json:"wisma"`
-	Name      string     `json:"name"`
-	Capacity  int        `json:"capacity"`
-	Note      string     `json:"note"`
-	Status    string     `json:"status"`
-	CreatedAt time.Time  `json:"created_at"`
-	UpdatedAt time.Time  `json:"updated_at"`
+	ID        uuid.UUID      `json:"id"`
+	WismaID   *uuid.UUID     `json:"wisma_id"`
+	Wisma     *WismaResponse `gorm:"foreignKey:WismaID" json:"wisma"`
+	Name      string         `json:"name"`
+	Capacity  int            `json:"capacity"`
+	Note      string         `json:"note"`
+	Status    string         `json:"status"`
+	CreatedAt time.Time      `json:"created_at"`
+	UpdatedAt time.Time      `json:"updated_at"`
 }
 
 type RoomEditRequest struct {
-	WismaID uuid.UUID `json:"wisma_id"`
-	Name    string    `json:"name"`
-	Note    string    `json:"note"`
+	WismaID  uuid.UUID `json:"wisma_id"`
+	Name     string    `json:"name"`
+	Note     string    `json:"note"`
+	Capacity int       `json:"capacity"`
 }
 
 type RoomRequest struct {
@@ -29,18 +30,6 @@ type RoomRequest struct {
 	Name     string `json:"name" binding:"required"`
 	Capacity int    `json:"capacity" binding:"required"`
 	Note     string `json:"note"`
-}
-
-type Wisma struct {
-	ID        uuid.UUID `json:"id"`
-	UserID    uuid.UUID `json:"user_id"`
-	User      User      `gorm:"foreignKey:UserID" json:"user"`
-	Name      string    `json:"name"`
-	Address   string    `json:"address"`
-	Code      string    `json:"code"`
-	Note      string    `json:"note"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
 }
 
 type RoomPaginateRequest struct {

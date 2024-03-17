@@ -22,7 +22,7 @@ func (r *CustomerRepository) Create(customer entity.Customer) error {
 
 func (r *CustomerRepository) Get(id string) (entity.Customer, error) {
 	var customer entity.Customer
-	err := r.db.Preload("Room").Preload("User").First(&customer, "id = ?", id).Error
+	err := r.db.Preload("Room").Preload("Room.Wisma").Preload("User").First(&customer, "id = ?", id).Error
 	if err != nil {
 		return customer, err
 	}
@@ -31,7 +31,7 @@ func (r *CustomerRepository) Get(id string) (entity.Customer, error) {
 
 func (r *CustomerRepository) GetByUserId(id string) (entity.Customer, error) {
 	var customer entity.Customer
-	err := r.db.First(&customer, "user_id = ?", id).Error
+	err := r.db.Preload("Room").Preload("Room.Wisma").Preload("User").First(&customer, "user_id = ?", id).Error
 	if err != nil {
 		return customer, err
 	}

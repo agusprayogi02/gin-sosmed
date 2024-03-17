@@ -112,7 +112,7 @@ func (s *AuthService) Login(req *dto.LoginRequest) (*dto.LoginResponse, error) {
 	for _, v := range *wismas {
 		wismasRes = append(wismasRes, dto.WismaResponse{
 			ID:      v.ID,
-			Nama:    v.Name,
+			Name:    v.Name,
 			Address: v.Address,
 			Code:    v.Code,
 			UserID:  *v.UserID,
