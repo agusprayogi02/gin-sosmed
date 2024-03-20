@@ -17,6 +17,7 @@ func RoomRouter(r *gin.RouterGroup) {
 	api := r.Group("/room")
 	api.POST("", handler.Create)
 	api.GET("/:id", handler.Get)
+	api.DELETE("/:id", handler.Delete)
 	api.PUT("/:id", handler.Update)
 	api.GET("", handler.GetAll)
 	api.GET("/wisma", handler.GetByWisma)

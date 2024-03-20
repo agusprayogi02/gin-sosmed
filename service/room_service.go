@@ -243,7 +243,13 @@ func (r *RoomService) Update(id string, req dto.RoomEditRequest) (*dto.RoomRespo
 }
 
 func (r *RoomService) Delete(id string) error {
-	err := r.repo.Delete(id)
+	_, err := r.repo.Get(id)
+	if err != nil {
+		return &errorhandler.NotFoundError{
+			Message: err.Error(),
+		}
+	}
+	err = r.repo.Delete(id)
 	if err != nil {
 		return &errorhandler.InternalServerError{
 			Message: err.Error(),
